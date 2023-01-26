@@ -1,0 +1,10 @@
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.exe.config
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.exe
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.pdb
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.AssemblyReference.cache
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top_down_shooter.Form1.resources
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top_down_shooter.Properties.Resources.resources
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.GenerateResource.cache
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.CoreCompileInputs.cache
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.exe
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.pdb
