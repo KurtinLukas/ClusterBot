@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace Top_down_shooter
 {
@@ -19,6 +20,8 @@ namespace Top_down_shooter
         bool down = false;
         int speed = 10;
 
+        string basePath = new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
+
         public Form1()
         {
             InitializeComponent();
@@ -26,6 +29,8 @@ namespace Top_down_shooter
         private void Form1_Load(object sender, EventArgs e)
         {
             player = new Player(500, 400);
+            int pathRemoveIndex = basePath.IndexOf("Top-down-shooter") + 17;
+            basePath = basePath.Remove(pathRemoveIndex);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -60,24 +65,25 @@ namespace Top_down_shooter
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.A)
-                left = false;
-            if (e.KeyCode == Keys.D)
-                right = false;
-            if (e.KeyCode == Keys.W)
-                up = false;
-            if (e.KeyCode == Keys.S)
-                down = false;
+            switch (e.KeyCode)
+            {
+                case Keys.A: left = false; break;
+                case Keys.D: right = false; break;
+                case Keys.W: up = false; break;
+                case Keys.S: down = false; break;
+            }
         }
 
         private void game_graphics(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            graphics.Clear(Color.Black);
-            SolidBrush player_brush = new SolidBrush(Color.Red);
-            graphics.FillRectangle(player_brush, player.X, player.Y, 50, 50);
-            graphics.FillEllipse(new SolidBrush(Color.Yellow), player.X + 5, player.Y + 10, 10, 10);
-            graphics.FillEllipse(new SolidBrush(Color.Yellow), player.X + 50 - 20, player.Y + 10, 10, 10);
+            Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/Hlava2.png");
+            graphics.DrawImage(playerMap, player.X, player.Y);
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
         }
     }
 }

@@ -8,3 +8,13 @@ D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\
 D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.CoreCompileInputs.cache
 D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.exe
 D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.pdb
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.exe.config
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.exe
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.pdb
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.AssemblyReference.cache
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top_down_shooter.Form1.resources
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top_down_shooter.Properties.Resources.resources
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.GenerateResource.cache
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.CoreCompileInputs.cache
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.exe
+E:\GitHub\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.pdb
