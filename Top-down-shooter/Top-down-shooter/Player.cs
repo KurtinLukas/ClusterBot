@@ -13,6 +13,8 @@ namespace Top_down_shooter
         public Point position;
         public int X = 0; //default position
         public int Y = 0;
+        public int width = 200;
+        public int height = 200;
         public int health = 100;
 
         //  metody
