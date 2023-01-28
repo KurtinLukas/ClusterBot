@@ -19,7 +19,8 @@ namespace Top_down_shooter
         bool right = false;
         bool up = false;
         bool down = false;
-        int speed = 20;
+        double speed;
+        double diagonalSpeed;
         float angle = 0;
 
         string basePath = new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
@@ -31,6 +32,8 @@ namespace Top_down_shooter
         private void Form1_Load(object sender, EventArgs e)
         {
             player = new Player(400, 300);
+            speed = 20; 
+            diagonalSpeed = speed / Math.Sqrt(2);
             int pathRemoveIndex = basePath.IndexOf("Top-down-shooter") + 17;
             basePath = basePath.Remove(pathRemoveIndex);
         }
@@ -39,22 +42,17 @@ namespace Top_down_shooter
         {
             // Movement
             if (left && player.X > 0)
-                player.X -= speed;
+                player.X -= (int)speed;
             if (right && player.X < ActiveForm.Width - player.width)
-                player.X += speed;
+                player.X += (int)speed;
             if (up && player.Y > 75)
-                player.Y -= speed;
+                player.Y -= (int)speed;
             if (down && player.Y < ActiveForm.Height - player.height)
-                player.Y += speed;
+                player.Y += (int)speed;
             if ((left && up) || (left && down) || (right && up) || (right && down))
-                speed = 10;
+                speed = diagonalSpeed;
             else
                 speed = 20;
-
-            /* Aiming
-            int diffX = Math.Abs(player.X - MousePosition.X);
-            int diffY = Math.Abs(player.Y - MousePosition.Y);
-            */
 
             pictureBox2.Invalidate();
         }
@@ -84,7 +82,7 @@ namespace Top_down_shooter
         private void game_graphics(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/hlavatest.png");
+            Bitmap playerMap = new Bitmap(@"D:\School\SPST\RPR\Projekt 2\Top-down-shooter\" + "Assets/Textures/hlavatest.png");
 
             //graphics.RotateTransform(angle, MatrixOrder.Append);
 
@@ -93,7 +91,31 @@ namespace Top_down_shooter
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+            //pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+        }
+
+        private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
+        {
+            // Aiming
+            int diffX = player.X + player.width/2 - e.X;
+            int diffY = Math.Abs(player.Y + player.height/2 - e.Y);
+            double prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
+            double funkce;
+            double alfa;
+            if (diffX < 0)
+            {
+                funkce = diffX / prepona;
+                alfa = Math.Acos(funkce) * 180 / Math.PI;
+            }
+            else
+            {
+                funkce = diffY / prepona;
+                alfa = Math.Asin(funkce) * 180 / Math.PI;
+            }   
+
+            label5.Text = "DiffX: " + diffX.ToString();
+            label6.Text = "DiffY: " + diffY.ToString();
+            label8.Text = "Alfa: " + alfa.ToString("F1");
         }
     }
 }
