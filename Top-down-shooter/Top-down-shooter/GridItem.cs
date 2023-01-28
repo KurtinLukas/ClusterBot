@@ -8,11 +8,11 @@ namespace Top_down_shooter
 {
     class GridItem
     {
-        public int X;
-        public int Y;
+        public int X = 0;
+        public int Y = 0;
 
-        public Material material;
-        public enum Material{
+        public Material material = Material.Air;
+        public enum Material {
             Air,
             Wall,
             Enemy,
@@ -44,6 +44,13 @@ namespace Top_down_shooter
             X = posX;
             Y = posY;
             material = mat;
+        }
+        public GridItem() { }
+
+        public override string ToString()
+        {
+            string output = "X=" + X + ", Y=" + Y;
+            return output;
         }
     }
 }

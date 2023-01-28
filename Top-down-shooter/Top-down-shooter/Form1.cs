@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Drawing.Drawing2D;
@@ -23,6 +24,8 @@ namespace Top_down_shooter
         double diagonalSpeed;
         float angle = 0;
 
+        GridItem[,] mapGrid;
+
         string basePath = new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
 
         public Form1()
@@ -36,6 +39,8 @@ namespace Top_down_shooter
             diagonalSpeed = speed / Math.Sqrt(2);
             int pathRemoveIndex = basePath.IndexOf("Top-down-shooter") + 17;
             basePath = basePath.Remove(pathRemoveIndex);
+            
+            
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -82,7 +87,7 @@ namespace Top_down_shooter
         private void game_graphics(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            Bitmap playerMap = new Bitmap(@"D:\School\SPST\RPR\Projekt 2\Top-down-shooter\" + "Assets/Textures/hlavatest.png");
+            Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/hlavatest.png");
 
             //graphics.RotateTransform(angle, MatrixOrder.Append);
 
@@ -91,14 +96,25 @@ namespace Top_down_shooter
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            //pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+            if(ActiveForm != null)
+                pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+
+            //přenastavení gridu
+            mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
+            for (int i = 0; i < ActiveForm.Width / 10; i++)
+            {
+                for (int j = 0; j < ActiveForm.Height / 10; j++)
+                {
+                    mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
+                }
+            }
         }
 
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
         {
             // Aiming
-            int diffX = player.X + player.width/2 - e.X;
-            int diffY = Math.Abs(player.Y + player.height/2 - e.Y);
+            int diffX = player.X + player.width / 2 - e.X;
+            int diffY = Math.Abs(player.Y + player.height / 2 - e.Y);
             double prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
             double funkce;
             double alfa;
@@ -111,11 +127,25 @@ namespace Top_down_shooter
             {
                 funkce = diffY / prepona;
                 alfa = Math.Asin(funkce) * 180 / Math.PI;
-            }   
+            }
 
             label5.Text = "DiffX: " + diffX.ToString();
             label6.Text = "DiffY: " + diffY.ToString();
             label8.Text = "Alfa: " + alfa.ToString("F1");
+            label4.Text = "GridItem: " + mapGrid[e.X / 10, e.Y / 10].ToString();  //e.X / 10, e.Y / 10
+        }
+
+        private void Form1_Activated(object sender, EventArgs e)
+        {
+            //deklarace gridu
+            mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
+            for (int i = 0; i < ActiveForm.Width / 10; i++)
+            {
+                for (int j = 0; j < ActiveForm.Height / 10; j++)
+                {
+                    mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
+                }
+            }
         }
     }
 }
