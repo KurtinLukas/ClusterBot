@@ -20,9 +20,11 @@ namespace Top_down_shooter
         bool right = false;
         bool up = false;
         bool down = false;
-        double speed;
+        int speed;
         double diagonalSpeed;
-        float angle = 0;
+        double angle = 0;
+        int mouseX;
+        int mouseY;
 
         GridItem[,] mapGrid;
 
@@ -52,35 +54,33 @@ namespace Top_down_shooter
                 for(int j = player.Y/10; j <= (player.Y + player.height)/10; j++)
                     mapGrid[(player.X + player.width)/10 - 2, j].material = GridItem.Material.Air;
 
-                player.X -= (int)speed;
+                player.X -= speed;
             }
             if (right && player.X < ActiveForm.Width - player.width - 20)
             {
                 for (int j = player.Y / 10; j <= (player.Y + player.height) / 10; j++)
                     mapGrid[player.X / 10 + 1, j].material = GridItem.Material.Air;
 
-                player.X += (int)speed;
+                player.X += speed;
             }
             if (up && player.Y > 60)
             {
                 for (int i = player.X / 10; i <= (player.X + player.width) / 10; i++)
                     mapGrid[i, (player.Y + player.height)/10 - 2].material = GridItem.Material.Air;
 
-                player.Y -= (int)speed;
+                player.Y -= speed;
             }
             if (down && player.Y < ActiveForm.Height - player.height - 45)
             {
                 for (int i = player.X / 10; i <= (player.X + player.width) / 10; i++)
                     mapGrid[i, player.Y / 10 + 2].material = GridItem.Material.Air;
 
-                player.Y += (int)speed;
+                player.Y += speed;
             }
             if ((left && up) || (left && down) || (right && up) || (right && down))
-                speed = diagonalSpeed;
+                speed = (int)diagonalSpeed;
             else
-            {
                 speed = 10;
-            }
             
             //generate new player grid
             for(int i = player.X/10 + 1; i < (player.X + player.width)/10 -2; i++)
@@ -90,6 +90,21 @@ namespace Top_down_shooter
                     mapGrid[i, j].material = GridItem.Material.Player;
                 }
             }
+
+            // Aiming
+            int centerX = player.X + player.width / 2;
+            int centerY = player.Y + player.height / 2;
+            int diffX = centerX - mouseX;
+            int diffY = Math.Abs(centerY - mouseY);
+            double prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
+            if (diffX < 0)
+                angle = Math.Acos(diffX / prepona);
+            else
+                angle = Math.Asin(diffY / prepona);
+            angle *= 180 / Math.PI;
+            angle = 180 - angle;
+            if (centerY < mouseY)
+                angle = 360 - angle;
 
             pictureBox2.Invalidate();
         }
@@ -119,9 +134,13 @@ namespace Top_down_shooter
         private void game_graphics(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/Hlava_5.png");
+            Bitmap playerMap = new Bitmap(@"D:\School\SPST\RPR\Projekt 2\Top-down-shooter\" + "Assets/Textures/Hlava_5.png");                  // zmenit
 
-            //graphics.RotateTransform(angle, MatrixOrder.Append);
+            int centerX = player.X + player.width / 2;
+            int centerY = player.Y + player.width / 2;
+            graphics.TranslateTransform(centerX, centerY);
+            graphics.RotateTransform(-float.Parse(angle.ToString()) + 90);
+            graphics.TranslateTransform(-centerX, -centerY);
 
             graphics.DrawImage(playerMap, player.X, player.Y);
         }
@@ -144,26 +163,9 @@ namespace Top_down_shooter
 
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
         {
-            // Aiming
-            int diffX = player.X + player.width / 2 - e.X;
-            int diffY = Math.Abs(player.Y + player.height / 2 - e.Y);
-            double prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
-            double funkce;
-            double alfa;
-            if (diffX < 0)
-            {
-                funkce = diffX / prepona;
-                alfa = Math.Acos(funkce) * 180 / Math.PI;
-            }
-            else
-            {
-                funkce = diffY / prepona;
-                alfa = Math.Asin(funkce) * 180 / Math.PI;
-            }
+            mouseX = e.X;
+            mouseY = e.Y;
 
-            label5.Text = "DiffX: " + diffX.ToString();
-            label6.Text = "DiffY: " + diffY.ToString();
-            label8.Text = "Alfa: " + alfa.ToString("F1");
             label4.Text = "GridItem: " + mapGrid[e.X / 10, e.Y / 10].ToString();  //e.X / 10, e.Y / 10
         }
 
