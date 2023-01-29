@@ -7,14 +7,14 @@ using System.Drawing;
 
 namespace Top_down_shooter
 {
-    class Player
+    class Character
     {
         //proměnný
         public Point position;
         public int X = 0; //default position
         public int Y = 0;
-        public int width = 200;
-        public int height = 200;
+        public int width = 100;
+        public int height = 100;
         public int health = 100;
 
         //  metody
@@ -38,26 +38,21 @@ namespace Top_down_shooter
 
         }
 
-        public void TakeDamage(int value)
-        {
-            health -= value;
-        }
-
         //ostatní
 
 
         //deklarace
-        public Player()
+        public Character()
         {
             position = new Point(X, Y);
         }
-        public Player(int posX, int posY)
+        public Character(int posX, int posY)
         {
             X = posX;
             Y = posY;
             position = new Point(posX, posY);
         }
-        public Player(Point posPoint)
+        public Character(Point posPoint)
         {
             X = posPoint.X;
             Y = posPoint.Y;

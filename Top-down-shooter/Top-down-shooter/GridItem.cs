@@ -49,7 +49,7 @@ namespace Top_down_shooter
 
         public override string ToString()
         {
-            string output = "X=" + X + ", Y=" + Y;
+            string output = "X=" + X + ", Y=" + Y + ", Mat=" + material;
             return output;
         }
     }

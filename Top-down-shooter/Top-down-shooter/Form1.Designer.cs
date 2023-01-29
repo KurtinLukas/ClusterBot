@@ -30,6 +30,7 @@ namespace Top_down_shooter
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
@@ -154,6 +155,7 @@ namespace Top_down_shooter
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox2);
             this.DoubleBuffered = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Clusterbot";
             this.Activated += new System.EventHandler(this.Form1_Activated);
