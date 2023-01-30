@@ -28,3 +28,13 @@ M:\ITA3\matlj.04\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debu
 M:\ITA3\matlj.04\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.CoreCompileInputs.cache
 M:\ITA3\matlj.04\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.exe
 M:\ITA3\matlj.04\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.pdb
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.exe.config
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.exe
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\bin\Debug\Top-down-shooter.pdb
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csprojAssemblyReference.cache
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top_down_shooter.Form1.resources
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top_down_shooter.Properties.Resources.resources
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.GenerateResource.cache
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.CoreCompileInputs.cache
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.exe
+G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.pdb

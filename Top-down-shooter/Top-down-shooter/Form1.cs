@@ -22,7 +22,7 @@ namespace Top_down_shooter
         bool down = false;
         int speed;
         double diagonalSpeed;
-        double angle = 0;
+        double angle;
         int mouseX;
         int mouseY;
 
@@ -42,8 +42,66 @@ namespace Top_down_shooter
             diagonalSpeed = speed / Math.Sqrt(2);
             int pathRemoveIndex = basePath.IndexOf("Top-down-shooter") + 17;
             basePath = basePath.Remove(pathRemoveIndex);
-            
-            
+        }
+
+        private void Form1_Activated(object sender, EventArgs e)
+        {
+            //deklarace gridu
+            mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
+            for (int i = 0; i < ActiveForm.Width / 10; i++)
+            {
+                for (int j = 0; j < ActiveForm.Height / 10; j++)
+                {
+                    mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
+                }
+            }
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (ActiveForm != null)
+                pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+
+            //rekalkulace gridu
+            mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
+            for (int i = 0; i < ActiveForm.Width / 10; i++)
+            {
+                for (int j = 0; j < ActiveForm.Height / 10; j++)
+                {
+                    mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
+                }
+            }
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.A: left = true; break;
+                case Keys.D: right = true; break;
+                case Keys.W: up = true; break;
+                case Keys.S: down = true; break;
+            }
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.A: left = false; break;
+                case Keys.D: right = false; break;
+                case Keys.W: up = false; break;
+                case Keys.S: down = false; break;
+            }
+        }
+
+        private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
+        {
+            // Update mouse position
+            mouseX = e.X;
+            mouseY = e.Y;
+
+            label4.Text = "GridItem: " + mapGrid[e.X / 10, e.Y / 10].ToString();  //e.X / 10, e.Y / 10
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -91,44 +149,22 @@ namespace Top_down_shooter
                 }
             }
 
-            // Aiming
-            int centerX = player.X + player.width / 2;
-            int centerY = player.Y + player.height / 2;
-            int diffX = centerX - mouseX;
-            int diffY = Math.Abs(centerY - mouseY);
+            // Aiming angle calculation
+            player.centerX = player.X + player.width / 2;
+            player.centerY = player.Y + player.height / 2;
+            int diffX = player.centerX - mouseX;
+            int diffY = Math.Abs(player.centerY - mouseY);
             double prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
             if (diffX < 0)
                 angle = Math.Acos(diffX / prepona);
             else
                 angle = Math.Asin(diffY / prepona);
             angle *= 180 / Math.PI;
-            angle = 180 - angle;
-            if (centerY < mouseY)
+            if (player.centerY < mouseY)
                 angle = 360 - angle;
+            angle -= 90;
 
             pictureBox2.Invalidate();
-        }
-
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.A: left = true; break;
-                case Keys.D: right = true; break;
-                case Keys.W: up = true; break;
-                case Keys.S: down = true; break;
-            }
-        }
-
-        private void Form1_KeyUp(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.A: left = false; break;
-                case Keys.D: right = false; break;
-                case Keys.W: up = false; break;
-                case Keys.S: down = false; break;
-            }
         }
 
         private void game_graphics(object sender, PaintEventArgs e)
@@ -136,50 +172,12 @@ namespace Top_down_shooter
             Graphics graphics = e.Graphics;
             Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/Hlava_5.png");
 
-            int centerX = player.X + player.width / 2;
-            int centerY = player.Y + player.width / 2;
-            graphics.TranslateTransform(centerX, centerY);
-            graphics.RotateTransform(-float.Parse(angle.ToString()) + 90);
-            graphics.TranslateTransform(-centerX, -centerY);
+            // Image rotation
+            graphics.TranslateTransform(player.centerX, player.centerY);
+            if (!double.IsNaN(angle)) graphics.RotateTransform(float.Parse(angle.ToString()));
+            graphics.TranslateTransform(-player.centerX, -player.centerY);
 
             graphics.DrawImage(playerMap, player.X, player.Y);
-        }
-
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-            if(ActiveForm != null)
-                pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
-
-            //rekalkulace gridu
-            mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
-            for (int i = 0; i < ActiveForm.Width / 10; i++)
-            {
-                for (int j = 0; j < ActiveForm.Height / 10; j++)
-                {
-                    mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
-                }
-            }
-        }
-
-        private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
-        {
-            mouseX = e.X;
-            mouseY = e.Y;
-
-            label4.Text = "GridItem: " + mapGrid[e.X / 10, e.Y / 10].ToString();  //e.X / 10, e.Y / 10
-        }
-
-        private void Form1_Activated(object sender, EventArgs e)
-        {
-            //deklarace gridu
-            mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
-            for (int i = 0; i < ActiveForm.Width / 10; i++)
-            {
-                for (int j = 0; j < ActiveForm.Height / 10; j++)
-                {
-                    mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
-                }
-            }
         }
     }
 }

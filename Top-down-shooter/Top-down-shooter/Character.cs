@@ -13,6 +13,8 @@ namespace Top_down_shooter
         public Point position;
         public int X = 0; //default position
         public int Y = 0;
+        public int centerX; 
+        public int centerY; 
         public int width = 100;
         public int height = 100;
         public int health = 100;
