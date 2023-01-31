@@ -16,6 +16,7 @@ namespace Top_down_shooter
     public partial class Form1 : Form
     {
         Character player;
+        List<Bullet> bullets = new List<Bullet>();
         bool left = false;
         bool right = false;
         bool up = false;
@@ -100,6 +101,16 @@ namespace Top_down_shooter
             }
         }
 
+        private void pictureBox2_MouseDown(object sender, MouseEventArgs e)
+        {
+            // Shoot a bullet
+            Bullet bullet = new Bullet(player.centerX, player.centerY, angle);
+            double rad = angle * Math.PI / 180;
+            bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
+            bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
+            bullets.Add(bullet);
+        }
+
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
         {
             // Update mouse position
@@ -144,6 +155,13 @@ namespace Top_down_shooter
                 speed = (int)diagonalSpeed;
             else
                 speed = 10;
+
+            // Bullet movement
+            foreach (Bullet b in bullets)
+            {
+                b.X += b.speedX;
+                b.Y += b.speedY;
+            }
             
             //generate new player grid
             for(int i = player.X/10 + 1; i < (player.X + player.width)/10 -2; i++)
@@ -175,8 +193,19 @@ namespace Top_down_shooter
         private void game_graphics(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            Bitmap playerMap = new Bitmap(@"D:\School\SPST\RPR\Projekt 2\Top-down-shooter\" + "Assets/Textures/Hlava_5.png");
+            Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/Hlava_5.png");
+            Bitmap bulletMap = new Bitmap(basePath + "Assets/Textures/bullet.png");
 
+            // Draw bullets
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                Bullet b = bullets[i];
+                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0)
+                    graphics.DrawImage(bulletMap, b.X, b.Y);
+                else
+                    bullets.RemoveAt(i);
+            }
+                
             // Image rotation
             graphics.TranslateTransform(player.centerX, player.centerY);
             if (!double.IsNaN(angle)) graphics.RotateTransform(float.Parse(angle.ToString()));

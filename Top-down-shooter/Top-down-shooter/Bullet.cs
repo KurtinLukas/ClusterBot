@@ -9,16 +9,19 @@ namespace Top_down_shooter
 {
     class Bullet
     {
-        public double posX;
-        public double posY;
+        public int X;
+        public int Y;
+        public int speedX;
+        public int speedY;
         public double rotation;
+        public int speed = 50;
         private double moveX;
         private double moveY;
         
-        public Bullet(int x, int y, float rotation)
+        public Bullet(int x, int y, double rotation)
         {
-            posX= x;
-            posY = y;
+            X = x;
+            Y = y;
             this.rotation = rotation;
             moveX = x;
             moveY = y;
@@ -28,8 +31,8 @@ namespace Top_down_shooter
         {
             moveX = Math.Cos(rotation) * 5f;
             moveY = Math.Sin(rotation) * 5f;
-            posX -= (int)moveX;
-            posY -= (int)moveY;
+            X -= (int)moveX;
+            Y -= (int)moveY;
         }
     }
 }
