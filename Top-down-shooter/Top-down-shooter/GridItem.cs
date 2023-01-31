@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Top_down_shooter
 {
-    class GridItem
+    public class GridItem
     {
         public int X = 0;
         public int Y = 0;
+        public Character charOnGrid;
 
         public Material material = Material.Air;
         public enum Material {

@@ -27,7 +27,10 @@ namespace Top_down_shooter
         int mouseX;
         int mouseY;
 
-        GridItem[,] mapGrid;
+        int killCount = 0;
+
+        public static GridItem[,] mapGrid;
+        public static List<Character> enemies = new List<Character>();
 
         string basePath = new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
 
@@ -43,6 +46,9 @@ namespace Top_down_shooter
             diagonalSpeed = speed / Math.Sqrt(2);
             int pathRemoveIndex = basePath.IndexOf("Top-down-shooter") + 17;
             basePath = basePath.Remove(pathRemoveIndex);
+            this.Cursor = ActuallyLoadCursor(basePath + @"Assets\Textures\cursor-4.cur");
+
+            
         }
 
         private void Form1_Activated(object sender, EventArgs e)
@@ -56,12 +62,15 @@ namespace Top_down_shooter
                     mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
                 }
             }
+            for(int i = 0; i < 3; i++)
+                SpawnEnemy();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            if (ActiveForm != null)
-                pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+            if (ActiveForm == null) return;
+
+            pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
 
             // GUI positioning
             progressBar1.Location = new Point(ActiveForm.Width - progressBar1.Width - 30, progressBar1.Location.Y);
@@ -76,6 +85,10 @@ namespace Top_down_shooter
                 {
                     mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
                 }
+            }
+            foreach(Character c in enemies)
+            {
+                ValidateCharGrid(c);
             }
         }
 
@@ -104,11 +117,15 @@ namespace Top_down_shooter
         private void pictureBox2_MouseDown(object sender, MouseEventArgs e)
         {
             // Shoot a bullet
-            Bullet bullet = new Bullet(player.centerX, player.centerY, angle);
             double rad = angle * Math.PI / 180;
+            //hodně cursed výpočty
+            //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
+            Bullet bullet = new Bullet(player.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), player.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), angle, false);
             bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
             bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
             bullets.Add(bullet);
+
+
         }
 
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
@@ -122,8 +139,9 @@ namespace Top_down_shooter
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            // Movement & player grid calculation
-            if (left && player.X > 5)
+            if (ActiveForm == null) return; //pokud je forma minimalizovaná tak ActiveForm == null
+                // Movement & player grid calculation
+                if (left && player.X > 5)
             {
                 for(int j = player.Y/10; j <= (player.Y + player.height)/10; j++)
                     mapGrid[(player.X + player.width)/10 - 2, j].material = GridItem.Material.Air;
@@ -157,20 +175,42 @@ namespace Top_down_shooter
                 speed = 10;
 
             // Bullet movement
-            foreach (Bullet b in bullets)
+            for(int i = 0; i < bullets.Count; i++) 
             {
+                Bullet b = bullets[i];
                 b.X += b.speedX;
                 b.Y += b.speedY;
-            }
-            
-            //generate new player grid
-            for(int i = player.X/10 + 1; i < (player.X + player.width)/10 -2; i++)
-            {
-                for(int j = player.Y/10 + 2; j < (player.Y + player.height)/10 -1; j++)
+
+
+                //damage enemies
+                try{
+
+                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0 && mapGrid[b.X / 10, b.Y / 10].charOnGrid != null)
                 {
-                    mapGrid[i, j].material = GridItem.Material.Player;
+                    Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
+                    if(enemies.Contains(tempChar)) //action for enemies hit
+                    {
+                        tempChar.health -= 20;
+                        bullets.Remove(b);
+                        if(tempChar.health <= 0)
+                        {
+                            tempChar.Die(mapGrid);
+                            enemies.Remove(tempChar);
+                            SpawnEnemy();
+                                killCount++;
+                                label1.Text = "Kills: " + killCount;
+                        }
+                    }
+                }
+                }
+                catch
+                {
+                    MessageBox.Show("Nastala chyba se střelou.", "Chyba!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+
+            //generate new player grid
+            ValidateCharGrid(player);
 
             // Aiming angle calculation
             player.centerX = player.X + player.width / 2;
@@ -192,26 +232,85 @@ namespace Top_down_shooter
 
         private void game_graphics(object sender, PaintEventArgs e)
         {
+            if (ActiveForm == null || double.IsNaN(angle)) return;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
             Graphics graphics = e.Graphics;
-            Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/Hlava_5.png");
-            Bitmap bulletMap = new Bitmap(basePath + "Assets/Textures/bullet.png");
+            GraphicsState state = graphics.Save();
+            
+            Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/PlayerIcon.png");
+            Image bulletImage = Image.FromFile(basePath + "Assets/Textures/Bullet.png");
+            Image enemyImage = Image.FromFile(basePath + "Assets/Textures/EnemyIcon.png");
 
             // Draw bullets
             for (int i = 0; i < bullets.Count; i++)
             {
+                state = graphics.Save();
                 Bullet b = bullets[i];
                 if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0)
-                    graphics.DrawImage(bulletMap, b.X, b.Y);
+                {
+                    //save a restore mají vrátit Graphics do stavu před úpravou, samozřejmě nefunguje
+                    //graphics.TranslateTransform(bulletImage.Width/2, bulletImage.Height/2);
+                    //graphics.RotateTransform((float)angle);
+                    graphics.DrawImage(bulletImage, b.X, b.Y);
+                    //b.Draw(bulletImage, angle, e.Graphics);
+                }
                 else
                     bullets.RemoveAt(i);
+                graphics.Restore(state);
             }
-                
+            graphics.Restore(state);
+            foreach(Character enemy in enemies)
+            {
+                graphics.DrawImage(enemyImage, enemy.X, enemy.Y);
+                graphics.DrawRectangle(new Pen(Color.Lime, 5), enemy.X + 10, enemy.Y + 120, (int)(0.7 * enemy.health), 10);
+            }
             // Image rotation
             graphics.TranslateTransform(player.centerX, player.centerY);
-            if (!double.IsNaN(angle)) graphics.RotateTransform(float.Parse(angle.ToString()));
+            graphics.RotateTransform((float)angle);
             graphics.TranslateTransform(-player.centerX, -player.centerY);
 
             graphics.DrawImage(playerMap, player.X, player.Y);
+        }
+
+        public static Cursor ActuallyLoadCursor(String path)
+        {
+            return new Cursor(LoadCursorFromFile(path));
+        }
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr LoadCursorFromFile(string fileName);
+
+        public void SpawnEnemy(Point spawnPoint)
+        {
+            Character enemy = new Character(spawnPoint);
+            enemies.Add(enemy);
+            ValidateCharGrid(enemy);
+        }
+        public void SpawnEnemy()
+        {
+            Thread.Sleep(1);
+            Random rng = new Random();
+            Character enemy = new Character(rng.Next(0,ActiveForm.Width), rng.Next(0, rng.Next(ActiveForm.Height)));
+            enemies.Add(enemy);
+            ValidateCharGrid(enemy);
+        }
+
+        public void ValidateCharGrid(Character c)
+        {
+            bool enemy = enemies.Contains(c);
+
+            for (int i = c.X / 10 + 1; i < (c.X + c.width) / 10 - 2; i++)
+            {
+                for (int j = c.Y / 10 + 2; j < (c.Y + c.height) / 10 - 1; j++)
+                {
+                    if(j * 10 < ActiveForm.Height && i * 10 < ActiveForm.Width)
+                    {
+                        mapGrid[i, j].material = enemy ? GridItem.Material.Enemy : GridItem.Material.Player;
+                        mapGrid[i, j].charOnGrid = c;
+                    }
+                }
+            }
         }
     }
 }
