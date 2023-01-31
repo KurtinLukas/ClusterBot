@@ -62,6 +62,11 @@ namespace Top_down_shooter
             if (ActiveForm != null)
                 pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
 
+            // GUI positioning
+            progressBar1.Location = new Point(ActiveForm.Width - progressBar1.Width - 30, progressBar1.Location.Y);
+            label3.Location = new Point(progressBar1.Location.X - label3.Width - 30, label3.Location.Y);
+            label2.Location = new Point(ActiveForm.Width / 3, label2.Location.Y);
+
             //rekalkulace gridu
             mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
             for (int i = 0; i < ActiveForm.Width / 10; i++)
@@ -170,7 +175,7 @@ namespace Top_down_shooter
         private void game_graphics(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/Hlava_5.png");
+            Bitmap playerMap = new Bitmap(@"D:\School\SPST\RPR\Projekt 2\Top-down-shooter\" + "Assets/Textures/Hlava_5.png");
 
             // Image rotation
             graphics.TranslateTransform(player.centerX, player.centerY);
