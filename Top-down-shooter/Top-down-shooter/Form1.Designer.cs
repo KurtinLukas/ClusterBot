@@ -79,7 +79,7 @@ namespace Top_down_shooter
             // 
             // pictureBox2
             // 
-            this.pictureBox2.BackgroundImage = global::Top_down_shooter.Properties.Resources.Grass;
+            this.pictureBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.BackgroundImage")));
             this.pictureBox2.Location = new System.Drawing.Point(0, 0);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox2.Name = "pictureBox2";

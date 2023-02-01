@@ -130,6 +130,7 @@ namespace Top_down_shooter
 
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
         {
+            if (e.X < 0 || e.Y < 0) return;
             // Update mouse position
             mouseX = e.X;
             mouseY = e.Y;
@@ -252,7 +253,10 @@ namespace Top_down_shooter
                 {
                     //save a restore mají vrátit Graphics do stavu před úpravou, samozřejmě nefunguje
                     //graphics.TranslateTransform(bulletImage.Width/2, bulletImage.Height/2);
-                    //graphics.RotateTransform((float)angle);
+                    graphics.TranslateTransform(b.X, b.Y);
+                    
+                    graphics.RotateTransform((float)angle);
+                    graphics.TranslateTransform(-b.X, -b.Y);
                     graphics.DrawImage(bulletImage, b.X, b.Y);
                     //b.Draw(bulletImage, angle, e.Graphics);
                 }
