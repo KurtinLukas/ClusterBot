@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Drawing.Drawing2D;
+using System.Media;
 
 namespace Top_down_shooter
 {
@@ -125,7 +126,9 @@ namespace Top_down_shooter
             bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
             bullets.Add(bullet);
 
-
+            //new SoundPlayer(basePath + @"\Assets\SFX\BulletSound.wav").Play();
+            Thread deathThread = new Thread(new ParameterizedThreadStart(PlayDeathSound));
+            deathThread.Start(basePath + @"\Assets\SFX\BulletSound.wav");
         }
 
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
@@ -186,26 +189,30 @@ namespace Top_down_shooter
                 //damage enemies
                 try{
 
-                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0 && mapGrid[b.X / 10, b.Y / 10].charOnGrid != null)
-                {
-                    Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
-                    if(enemies.Contains(tempChar)) //action for enemies hit
+                    if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0 && mapGrid[b.X / 10, b.Y / 10].charOnGrid != null)
                     {
-                        tempChar.health -= 20;
-                        bullets.Remove(b);
-                        if(tempChar.health <= 0)
+                        Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
+                        if(enemies.Contains(tempChar)) //action for enemies hit
                         {
-                            tempChar.Die(mapGrid);
-                            enemies.Remove(tempChar);
-                            SpawnEnemy();
+                            tempChar.health -= 20;
+                            bullets.Remove(b);
+                            if(tempChar.health <= 0)
+                            {
+                                tempChar.Die(mapGrid);
+                                enemies.Remove(tempChar);
+                                SpawnEnemy();
                                 killCount++;
                                 label1.Text = "Kills: " + killCount;
+                                Thread deathThread = new Thread(new ParameterizedThreadStart(PlayDeathSound));
+                                deathThread.Start(basePath + @"\Assets\SFX\DeathSound.wav");
+                                
+                            }
                         }
                     }
                 }
-                }
                 catch
                 {
+                    
                     MessageBox.Show("Nastala chyba se střelou.", "Chyba!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -229,6 +236,11 @@ namespace Top_down_shooter
             angle -= 90;
 
             pictureBox2.Invalidate();
+        }
+
+        public static void PlayDeathSound(object path)
+        {
+            new SoundPlayer((string)path).Play();
         }
 
         private void game_graphics(object sender, PaintEventArgs e)
