@@ -38,3 +38,4 @@ G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-sho
 G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.exe
 G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.pdb
 G:\RPR\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csprojAssemblyReference.cache
+D:\School\SPST\RPR\Projekt 2\Top-down-shooter\Top-down-shooter\Top-down-shooter\obj\Debug\Top-down-shooter.csproj.SuggestedBindingRedirects.cache

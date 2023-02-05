@@ -18,6 +18,9 @@ namespace Top_down_shooter
     {
         Character player;
         List<Bullet> bullets = new List<Bullet>();
+        List<AmmoBox> ammoBoxes = new List<AmmoBox>();
+        List<Label> labels = new List<Label>();
+        Random rng = new Random();
         bool left = false;
         bool right = false;
         bool up = false;
@@ -29,6 +32,8 @@ namespace Top_down_shooter
         int mouseY;
 
         int killCount = 0;
+        int ammoCount = 100;
+        int ticks;
 
         public static GridItem[,] mapGrid;
         public static List<Character> enemies = new List<Character>();
@@ -117,18 +122,22 @@ namespace Top_down_shooter
 
         private void pictureBox2_MouseDown(object sender, MouseEventArgs e)
         {
-            // Shoot a bullet
-            double rad = angle * Math.PI / 180;
-            //hodně cursed výpočty
-            //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
-            Bullet bullet = new Bullet(player.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), player.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), angle, false);
-            bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
-            bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
-            bullets.Add(bullet);
+            if (ammoCount > 0)
+            {
+                ammoCount--;
+                // Shoot a bullet
+                double rad = angle * Math.PI / 180;
+                //hodně cursed výpočty
+                //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
+                Bullet bullet = new Bullet(player.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), player.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), angle, false);
+                bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
+                bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
+                bullets.Add(bullet);
 
-            //new SoundPlayer(basePath + @"\Assets\SFX\BulletSound.wav").Play();
-            Thread deathThread = new Thread(new ParameterizedThreadStart(PlayDeathSound));
-            deathThread.Start(basePath + @"\Assets\SFX\BulletSound.wav");
+                //new SoundPlayer(basePath + @"\Assets\SFX\BulletSound.wav").Play();
+                Thread deathThread = new Thread(new ParameterizedThreadStart(PlayDeathSound));
+                deathThread.Start(basePath + @"\Assets\SFX\BulletSound.wav");
+            }
         }
 
         private void pictureBox2_MouseMove(object sender, MouseEventArgs e)
@@ -205,7 +214,13 @@ namespace Top_down_shooter
                                 label1.Text = "Kills: " + killCount;
                                 Thread deathThread = new Thread(new ParameterizedThreadStart(PlayDeathSound));
                                 deathThread.Start(basePath + @"\Assets\SFX\DeathSound.wav");
-                                
+                                if (rng.Next(0,2) == 0)
+                                {
+                                    AmmoBox box = new AmmoBox();
+                                    box.X = rng.Next(10, ActiveForm.Width-10);
+                                    box.Y = rng.Next(10, ActiveForm.Height-10);
+                                    ammoBoxes.Add(box);
+                                }    
                             }
                         }
                     }
@@ -219,6 +234,48 @@ namespace Top_down_shooter
 
             //generate new player grid
             ValidateCharGrid(player);
+
+            // Ammo pickup
+            label2.Text = "Ammo: " + ammoCount;
+            if (ammoCount == 0)
+                label2.BackColor = Color.Red;
+            else
+                label2.BackColor = Color.White;
+            for (int i = 0; i < ammoBoxes.Count; i++)
+            {
+                AmmoBox ammo = ammoBoxes[i];
+                if ((player.X + player.width) > (ammo.X) && (player.X) < (ammo.X + 50))
+                {
+                    if ((player.Y + player.height) > ammo.Y && (player.Y) < (ammo.Y + 50))
+                    {
+                        int ran = rng.Next(10, 21);
+                        ammoCount += ran;
+                        ammoBoxes.RemoveAt(i);
+                        Label lbl = new Label();
+                        lbl.Name = i.ToString();
+                        lbl.Text = "+" + ran;
+                        lbl.Location = new Point(player.X, player.Y);
+                        lbl.AutoSize = true;
+                        lbl.Font = new Font("Verdana", 12);
+                        lbl.BackColor = Color.Black;
+                        lbl.ForeColor = Color.Yellow;
+                        this.Controls.Add(lbl);
+                        lbl.BringToFront();
+                        labels.Add(lbl);
+                        ticks = 0;
+                    }
+                }
+            }
+            
+            for (int i = 0; i < labels.Count; i++)
+            {
+                labels[i].Location = new Point(labels[i].Location.X, labels[i].Location.Y-1);
+                if (ticks > 50)
+                {
+                    this.Controls.Remove(labels[i]);
+                    labels.RemoveAt(i);
+                }
+            }
 
             // Aiming angle calculation
             player.centerX = player.X + player.width / 2;
@@ -236,6 +293,7 @@ namespace Top_down_shooter
             angle -= 90;
 
             pictureBox2.Invalidate();
+            ticks++;
         }
 
         public static void PlayDeathSound(object path)
@@ -255,6 +313,13 @@ namespace Top_down_shooter
             Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/PlayerIcon.png");
             Image bulletImage = Image.FromFile(basePath + "Assets/Textures/Bullet.png");
             Image enemyImage = Image.FromFile(basePath + "Assets/Textures/EnemyIcon.png");
+            Image ammoImage = Image.FromFile(basePath + "Assets/Textures/test.png");
+
+            // Draw ammo boxes
+            foreach (AmmoBox box in ammoBoxes)
+            {
+                graphics.DrawImage(ammoImage, box.X, box.Y);
+            }
 
             // Draw bullets
             for (int i = 0; i < bullets.Count; i++)
@@ -306,7 +371,6 @@ namespace Top_down_shooter
         public void SpawnEnemy()
         {
             Thread.Sleep(1);
-            Random rng = new Random();
             Character enemy = new Character(rng.Next(0,ActiveForm.Width), rng.Next(0, rng.Next(ActiveForm.Height)));
             enemies.Add(enemy);
             ValidateCharGrid(enemy);

@@ -48,9 +48,9 @@ namespace Top_down_shooter
             this.label2.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.label2.Location = new System.Drawing.Point(286, 21);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(96, 25);
+            this.label2.Size = new System.Drawing.Size(122, 25);
             this.label2.TabIndex = 1;
-            this.label2.Text = "Ammo: ";
+            this.label2.Text = "Ammo: 10";
             // 
             // label3
             // 
