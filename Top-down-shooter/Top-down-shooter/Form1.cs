@@ -52,7 +52,7 @@ namespace Top_down_shooter
             diagonalSpeed = speed / Math.Sqrt(2);
             int pathRemoveIndex = basePath.IndexOf("Top-down-shooter") + 17;
             basePath = basePath.Remove(pathRemoveIndex);
-            this.Cursor = ActuallyLoadCursor(basePath + @"Assets\Textures\cursor-4.cur");
+            this.Cursor = ActuallyLoadCursor(basePath + @"Assets\Textures\Cursor.cur");
 
             
         }
@@ -134,9 +134,8 @@ namespace Top_down_shooter
                 bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
                 bullets.Add(bullet);
 
-                //new SoundPlayer(basePath + @"\Assets\SFX\BulletSound.wav").Play();
-                Thread deathThread = new Thread(new ParameterizedThreadStart(PlayDeathSound));
-                deathThread.Start(basePath + @"\Assets\SFX\BulletSound.wav");
+                //Přehraje zvuk v cestě
+                new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Shoot.wav");
             }
         }
 
@@ -194,41 +193,32 @@ namespace Top_down_shooter
                 b.X += b.speedX;
                 b.Y += b.speedY;
 
-
+                if (b.X > 1915 || b.Y > 1045) continue;
                 //damage enemies
-                try{
-
-                    if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0 && mapGrid[b.X / 10, b.Y / 10].charOnGrid != null)
+                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0 && mapGrid[b.X / 10, b.Y / 10].charOnGrid != null)
+                {
+                    Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
+                    if(enemies.Contains(tempChar)) //action for enemies hit
                     {
-                        Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
-                        if(enemies.Contains(tempChar)) //action for enemies hit
+                        tempChar.health -= 20;
+                        bullets.Remove(b);
+                        if(tempChar.health <= 0)
                         {
-                            tempChar.health -= 20;
-                            bullets.Remove(b);
-                            if(tempChar.health <= 0)
+                            tempChar.Die(mapGrid);
+                            enemies.Remove(tempChar);
+                            SpawnEnemy();
+                            killCount++;
+                            label1.Text = "Kills: " + killCount;
+                            new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Death.wav");
+                            if (rng.Next(0,2) == 0)
                             {
-                                tempChar.Die(mapGrid);
-                                enemies.Remove(tempChar);
-                                SpawnEnemy();
-                                killCount++;
-                                label1.Text = "Kills: " + killCount;
-                                Thread deathThread = new Thread(new ParameterizedThreadStart(PlayDeathSound));
-                                deathThread.Start(basePath + @"\Assets\SFX\DeathSound.wav");
-                                if (rng.Next(0,2) == 0)
-                                {
-                                    AmmoBox box = new AmmoBox();
-                                    box.X = rng.Next(10, ActiveForm.Width-10);
-                                    box.Y = rng.Next(10, ActiveForm.Height-10);
-                                    ammoBoxes.Add(box);
-                                }    
-                            }
+                                AmmoBox box = new AmmoBox();
+                                box.X = tempChar.X + 25;
+                                box.Y = tempChar.Y + 25;
+                                ammoBoxes.Add(box);
+                            }    
                         }
                     }
-                }
-                catch
-                {
-                    
-                    MessageBox.Show("Nastala chyba se střelou.", "Chyba!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
@@ -263,6 +253,7 @@ namespace Top_down_shooter
                         lbl.BringToFront();
                         labels.Add(lbl);
                         ticks = 0;
+                        new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Reload.wav");
                     }
                 }
             }
@@ -296,7 +287,7 @@ namespace Top_down_shooter
             ticks++;
         }
 
-        public static void PlayDeathSound(object path)
+        public static void PlaySound(object path)
         {
             new SoundPlayer((string)path).Play();
         }
@@ -313,7 +304,7 @@ namespace Top_down_shooter
             Bitmap playerMap = new Bitmap(basePath + "Assets/Textures/PlayerIcon.png");
             Image bulletImage = Image.FromFile(basePath + "Assets/Textures/Bullet.png");
             Image enemyImage = Image.FromFile(basePath + "Assets/Textures/EnemyIcon.png");
-            Image ammoImage = Image.FromFile(basePath + "Assets/Textures/test.png");
+            Image ammoImage = Image.FromFile(basePath + "Assets/Textures/AmmoBox.png");
 
             // Draw ammo boxes
             foreach (AmmoBox box in ammoBoxes)
@@ -371,7 +362,7 @@ namespace Top_down_shooter
         public void SpawnEnemy()
         {
             Thread.Sleep(1);
-            Character enemy = new Character(rng.Next(0,ActiveForm.Width), rng.Next(0, rng.Next(ActiveForm.Height)));
+            Character enemy = new Character(rng.Next(0,ActiveForm.Width - 100), rng.Next(0, rng.Next(ActiveForm.Height - 100)));
             enemies.Add(enemy);
             ValidateCharGrid(enemy);
         }
