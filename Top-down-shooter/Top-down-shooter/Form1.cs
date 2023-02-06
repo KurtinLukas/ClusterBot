@@ -20,6 +20,7 @@ namespace Top_down_shooter
         List<Bullet> bullets = new List<Bullet>();
         List<AmmoBox> ammoBoxes = new List<AmmoBox>();
         List<Label> labels = new List<Label>();
+        List<int> ticks = new List<int>();
         Random rng = new Random();
         bool left = false;
         bool right = false;
@@ -33,7 +34,6 @@ namespace Top_down_shooter
 
         int killCount = 0;
         int ammoCount = 100;
-        int ticks;
 
         public static GridItem[,] mapGrid;
         public static List<Character> enemies = new List<Character>();
@@ -126,7 +126,8 @@ namespace Top_down_shooter
             {
                 ammoCount--;
                 // Shoot a bullet
-                double rad = (angle + rng.Next(-2,3)) * Math.PI / 180;
+                double bulletAngle = angle + rng.Next(-2, 3);
+                double rad = bulletAngle * Math.PI / 180;
                 //hodně cursed výpočty
                 //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
                 Bullet bullet = new Bullet(player.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), player.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), (float)angle, false);
@@ -245,15 +246,15 @@ namespace Top_down_shooter
                         Label lbl = new Label();
                         lbl.Name = i.ToString();
                         lbl.Text = "+" + ran;
-                        lbl.Location = new Point(player.X, player.Y);
+                        lbl.Location = new Point(player.centerX, player.centerY);
                         lbl.AutoSize = true;
-                        lbl.Font = new Font("Verdana", 12);
+                        lbl.Font = new Font("Verdana", 15);
                         lbl.BackColor = Color.Black;
-                        lbl.ForeColor = Color.Yellow;
+                        lbl.ForeColor = Color.Lime;
                         this.Controls.Add(lbl);
                         lbl.BringToFront();
                         labels.Add(lbl);
-                        ticks = 0;
+                        ticks.Add(30);
                         new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Reload.wav");
                     }
                 }
@@ -261,11 +262,13 @@ namespace Top_down_shooter
             
             for (int i = 0; i < labels.Count; i++)
             {
-                labels[i].Location = new Point(labels[i].Location.X, labels[i].Location.Y-1);
-                if (ticks > 50)
+                ticks[i]--;
+                labels[i].Location = new Point(labels[i].Location.X, labels[i].Location.Y-2);
+                if (ticks[i] <= 0)
                 {
                     this.Controls.Remove(labels[i]);
                     labels.RemoveAt(i);
+                    ticks.RemoveAt(i);
                 }
             }
 
@@ -285,7 +288,6 @@ namespace Top_down_shooter
             angle -= 90;
 
             pictureBox2.Invalidate();
-            ticks++;
         }
 
         public static void PlaySound(object path)
