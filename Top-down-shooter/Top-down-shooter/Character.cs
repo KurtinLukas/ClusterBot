@@ -22,35 +22,43 @@ namespace Top_down_shooter
 
         //  metody
         //pohyb
-        public void MoveBy(int posX, int posY, GridItem[,] mapGrid)
+        public void MoveBy(int posX, int posY)
         {
-            X = posX;
-            Y = posY;
-            position = new Point(posX, posY);
-            if(posX > 0)
-                for (int j = Y / 10; j <= (Y + height) / 10; j++)
+            if (Form1.ActiveForm == null || X + posX + width > Form1.ActiveForm.Width-15 || X+posX+width < 0 || Y + posY + height > Form1.ActiveForm.Height-35 || Y + posY + height < 0) 
+                return;
+            X += posX;
+            Y += posY;
+            //clear old position
+            for (int i = X / 10; i < (X + width) / 10; i++)
+            {
+                for (int j = Y / 10; j < (Y + height) / 10; j++)
                 {
-                    mapGrid[(X + width) / 10 - 2, j].material = GridItem.Material.Air;
-                    mapGrid[(X + width) / 10 - 2, j].charOnGrid = this;
+                    mapGrid[i, j].material = GridItem.Material.Air;
+                    mapGrid[i, j].charOnGrid = null;
                 }
-            else if(posX < 0)
-                for (int j = Y / 10; j <= (Y + height) / 10; j++)
+            }
+            //create new position
+            for (int i = X / 10 + 1; i < (X + width) / 10 - 2; i++)
+            {
+                for (int j = Y / 10 + 2; j < (Y + height) / 10 - 1; j++)
                 {
-                    mapGrid[X / 10 + 1, j].material = GridItem.Material.Air;
-                    mapGrid[X / 10 + 1, j].charOnGrid = this;
+                    mapGrid[i, j].material = GridItem.Material.Enemy;
+                    mapGrid[i, j].charOnGrid = this;
                 }
-            if(posY > 0)
-                for (int i = X / 10; i <= (X + width) / 10; i++)
-                {
-                    mapGrid[i, (Y + height) / 10 - 2].material = GridItem.Material.Air;
-                    mapGrid[i, (Y + height) / 10 - 2].charOnGrid = this;
-                }
-            else if(posY < 0)
-                for (int i = X / 10; i <= (X + width) / 10; i++)
-                {
-                    mapGrid[i, Y / 10 + 2].material = GridItem.Material.Air;
-                    mapGrid[i, Y / 10 + 2].charOnGrid = this;
-                }
+            }
+
+            if ((posX < 0 && (mapGrid[X / 10, Y / 10 + 2].charOnGrid != null || mapGrid[X / 10, Y / 10 + 8].charOnGrid != null)) ||
+                (posX > 0 && (mapGrid[X / 10 + 11, Y / 10 + 2].charOnGrid != null || mapGrid[X / 10 + 11, Y / 10 + 8].charOnGrid != null)))
+            {
+                X -= posX;
+            }
+            if ((posY < 0 && (mapGrid[X / 10 + 1, Y / 10].charOnGrid != null || mapGrid[X / 10 + 10, Y / 10].charOnGrid != null)) ||
+                (posY > 0 && (mapGrid[X / 10 + 1, Y / 10 + 11].charOnGrid != null || mapGrid[X / 10 + 10, Y / 10 + 11].charOnGrid != null)))
+            {
+                Y -= posY;
+            }
+            
+            position = new Point(X, Y);
         }
 
         //akce
@@ -60,13 +68,13 @@ namespace Top_down_shooter
         }
 
         //ostatní
-        public void Die(GridItem[,] mapGrid)
+        public void Die()
         {
             for (int i = X / 10 + 1; i < (X + width) / 10 - 2; i++)
             {
                 for (int j = Y / 10 + 2; j < (Y + height) / 10 - 1; j++)
                 {
-                    mapGrid[i, j].material = GridItem.Material.Air;
+                    //mapGrid[i, j].material = GridItem.Material.Air;
                     mapGrid[i, j].charOnGrid = null;
                 }
             }

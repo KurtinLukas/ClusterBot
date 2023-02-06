@@ -46,7 +46,7 @@ namespace Top_down_shooter
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label2.Location = new System.Drawing.Point(286, 21);
+            this.label2.Location = new System.Drawing.Point(320, 21);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(122, 25);
             this.label2.TabIndex = 1;
@@ -83,7 +83,7 @@ namespace Top_down_shooter
             this.pictureBox2.Location = new System.Drawing.Point(0, 0);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(989, 712);
+            this.pictureBox2.Size = new System.Drawing.Size(1487, 966);
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.game_graphics);
@@ -125,6 +125,8 @@ namespace Top_down_shooter
             this.Controls.Add(this.pictureBox2);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximumSize = new System.Drawing.Size(1000, 750);
+            this.MinimumSize = new System.Drawing.Size(1000, 750);
             this.Name = "Form1";
             this.Text = "Clusterbot";
             this.Activated += new System.EventHandler(this.Form1_Activated);

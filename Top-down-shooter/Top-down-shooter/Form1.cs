@@ -31,6 +31,7 @@ namespace Top_down_shooter
         double angle;
         int mouseX;
         int mouseY;
+        bool resizing = false;
 
         int killCount = 0;
         int ammoCount = 100;
@@ -47,6 +48,11 @@ namespace Top_down_shooter
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //fullscreen
+            /*TopMost = true;
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
+            */
             player = new Character(400, 300);
             speed = 10; 
             diagonalSpeed = speed / Math.Sqrt(2);
@@ -74,14 +80,8 @@ namespace Top_down_shooter
 
         private void Form1_Resize(object sender, EventArgs e)
         {
+            resizing = true;
             if (ActiveForm == null) return;
-
-            pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
-
-            // GUI positioning
-            progressBar1.Location = new Point(ActiveForm.Width - progressBar1.Width - 30, progressBar1.Location.Y);
-            label3.Location = new Point(progressBar1.Location.X - label3.Width - 30, label3.Location.Y);
-            label2.Location = new Point(ActiveForm.Width / 3, label2.Location.Y);
 
             //rekalkulace gridu
             mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
@@ -92,10 +92,20 @@ namespace Top_down_shooter
                     mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
                 }
             }
+
+            pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+
+            // GUI positioning
+            progressBar1.Location = new Point(ActiveForm.Width - progressBar1.Width - 30, progressBar1.Location.Y);
+            label3.Location = new Point(progressBar1.Location.X - label3.Width - 30, label3.Location.Y);
+            label2.Location = new Point(ActiveForm.Width / 3, label2.Location.Y);
+
+            
             foreach(Character c in enemies)
             {
                 ValidateCharGrid(c);
             }
+            resizing = false;
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -153,33 +163,33 @@ namespace Top_down_shooter
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (ActiveForm == null) return; //pokud je forma minimalizovaná tak ActiveForm == null
+            if (ActiveForm == null || resizing) return; //pokud je forma minimalizovaná tak ActiveForm == null
                 // Movement & player grid calculation
                 if (left && player.X > 5)
             {
                 for(int j = player.Y/10; j <= (player.Y + player.height)/10; j++)
-                    mapGrid[(player.X + player.width)/10 - 2, j].material = GridItem.Material.Air;
+                    mapGrid[(player.X + player.width)/10 - 2, j].charOnGrid = null;
 
                 player.X -= speed;
             }
             if (right && player.X < ActiveForm.Width - player.width - 20)
             {
                 for (int j = player.Y / 10; j <= (player.Y + player.height) / 10; j++)
-                    mapGrid[player.X / 10 + 1, j].material = GridItem.Material.Air;
+                    mapGrid[player.X / 10 + 1, j].charOnGrid = null;
 
                 player.X += speed;
             }
             if (up && player.Y > 60)
             {
                 for (int i = player.X / 10; i <= (player.X + player.width) / 10; i++)
-                    mapGrid[i, (player.Y + player.height)/10 - 2].material = GridItem.Material.Air;
+                    mapGrid[i, (player.Y + player.height)/10 - 2].charOnGrid = null;
 
                 player.Y -= speed;
             }
             if (down && player.Y < ActiveForm.Height - player.height - 45)
             {
                 for (int i = player.X / 10; i <= (player.X + player.width) / 10; i++)
-                    mapGrid[i, player.Y / 10 + 2].material = GridItem.Material.Air;
+                    mapGrid[i, player.Y / 10 + 2].charOnGrid = null;
 
                 player.Y += speed;
             }
@@ -206,7 +216,7 @@ namespace Top_down_shooter
                         bullets.Remove(b);
                         if(tempChar.health <= 0)
                         {
-                            tempChar.Die(mapGrid);
+                            tempChar.Die();
                             enemies.Remove(tempChar);
                             SpawnEnemy();
                             killCount++;
@@ -226,6 +236,13 @@ namespace Top_down_shooter
 
             //generate new player grid
             ValidateCharGrid(player);
+
+            //bot movement test
+            foreach (Character c in enemies)
+            {
+                c.MoveBy(1, 2);
+                ValidateCharGrid(c);
+            }
 
             // Ammo pickup
             label2.Text = "Ammo: " + ammoCount;
@@ -376,13 +393,18 @@ namespace Top_down_shooter
             {
                 for (int j = c.Y / 10 + 2; j < (c.Y + c.height) / 10 - 1; j++)
                 {
-                    if(j * 10 < ActiveForm.Height && i * 10 < ActiveForm.Width)
+                    if(j * 10 < pictureBox2.Height && i * 10 < pictureBox2.Width)
                     {
                         mapGrid[i, j].material = enemy ? GridItem.Material.Enemy : GridItem.Material.Player;
                         mapGrid[i, j].charOnGrid = c;
                     }
                 }
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
