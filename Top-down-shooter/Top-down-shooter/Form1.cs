@@ -126,12 +126,13 @@ namespace Top_down_shooter
             {
                 ammoCount--;
                 // Shoot a bullet
-                double rad = angle * Math.PI / 180;
+                double rad = (angle + rng.Next(-2,3)) * Math.PI / 180;
                 //hodně cursed výpočty
                 //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
-                Bullet bullet = new Bullet(player.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), player.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), angle, false);
+                Bullet bullet = new Bullet(player.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), player.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), (float)angle, false);
                 bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
                 bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
+                bullet.rotation = (float)angle;
                 bullets.Add(bullet);
 
                 //Přehraje zvuk v cestě
@@ -308,9 +309,7 @@ namespace Top_down_shooter
 
             // Draw ammo boxes
             foreach (AmmoBox box in ammoBoxes)
-            {
                 graphics.DrawImage(ammoImage, box.X, box.Y);
-            }
 
             // Draw bullets
             for (int i = 0; i < bullets.Count; i++)
@@ -323,7 +322,7 @@ namespace Top_down_shooter
                     //graphics.TranslateTransform(bulletImage.Width/2, bulletImage.Height/2);
                     graphics.TranslateTransform(b.X, b.Y);
                     
-                    graphics.RotateTransform((float)angle);
+                    graphics.RotateTransform(b.rotation);
                     graphics.TranslateTransform(-b.X, -b.Y);
                     graphics.DrawImage(bulletImage, b.X, b.Y);
                     //b.Draw(bulletImage, angle, e.Graphics);

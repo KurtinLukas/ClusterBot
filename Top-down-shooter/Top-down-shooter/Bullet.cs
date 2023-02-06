@@ -13,13 +13,13 @@ namespace Top_down_shooter
         public int Y;
         public int speedX;
         public int speedY;
-        public double rotation;
+        public float rotation;
         public int speed = 35;
         private double moveX;
         private double moveY;
         public bool damagePlayer;
         
-        public Bullet(int x, int y, double rotation, bool damagePlayer)
+        public Bullet(int x, int y, float rotation, bool damagePlayer)
         {
             X = x;
             Y = y;
