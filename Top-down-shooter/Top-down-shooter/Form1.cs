@@ -33,6 +33,7 @@ namespace Top_down_shooter
         int mouseY;
         bool resizing = false;
 
+        int score = 0;
         int killCount = 0;
         int ammoCount = 100;
 
@@ -74,7 +75,7 @@ namespace Top_down_shooter
                     mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
                 }
             }
-            for(int i = 0; i < 3; i++)
+            for(int i = 0; i < 5; i++)
                 SpawnEnemy();
         }
 
@@ -134,6 +135,7 @@ namespace Top_down_shooter
         {
             if (ammoCount > 0)
             {
+                score -= 5;
                 ammoCount--;
                 // Shoot a bullet
                 double bulletAngle = angle + rng.Next(-2, 3);
@@ -216,11 +218,12 @@ namespace Top_down_shooter
                         bullets.Remove(b);
                         if(tempChar.health <= 0)
                         {
+                            score += 100;
                             tempChar.Die();
                             enemies.Remove(tempChar);
                             SpawnEnemy();
                             killCount++;
-                            label1.Text = "Kills: " + killCount;
+                            
                             new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Death.wav");
                             if (rng.Next(0,2) == 0)
                             {
@@ -240,7 +243,7 @@ namespace Top_down_shooter
             //bot movement test
             foreach (Character c in enemies)
             {
-                c.MoveBy(1, 2);
+                c.MoveBy(rng.Next(-3, 3), rng.Next(-3,3));
                 ValidateCharGrid(c);
             }
 
@@ -304,6 +307,7 @@ namespace Top_down_shooter
                 angle = 360 - angle;
             angle -= 90;
 
+            label1.Text = "Score: " + score;
             pictureBox2.Invalidate();
         }
 
@@ -335,7 +339,7 @@ namespace Top_down_shooter
             {
                 state = graphics.Save();
                 Bullet b = bullets[i];
-                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0)
+                if (b.X < pictureBox2.Width && b.Y < pictureBox2.Height && b.X > 0 && b.Y > 0)
                 {
                     //save a restore mají vrátit Graphics do stavu před úpravou, samozřejmě nefunguje
                     //graphics.TranslateTransform(bulletImage.Width/2, bulletImage.Height/2);

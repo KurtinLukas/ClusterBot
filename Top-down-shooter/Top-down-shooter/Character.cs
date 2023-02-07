@@ -24,7 +24,7 @@ namespace Top_down_shooter
         //pohyb
         public void MoveBy(int posX, int posY)
         {
-            if (Form1.ActiveForm == null || X + posX + width > Form1.ActiveForm.Width-15 || X+posX+width < 0 || Y + posY + height > Form1.ActiveForm.Height-35 || Y + posY + height < 0) 
+            if (Form1.ActiveForm == null || X + posX + width > Form1.ActiveForm.Width-15 || X+posX+width < 100 || Y + posY + height > Form1.ActiveForm.Height-35 || Y + posY + height < 100) 
                 return;
             X += posX;
             Y += posY;
