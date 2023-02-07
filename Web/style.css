@@ -1,0 +1,104 @@
+html {
+    scroll-padding: 110px;
+    scroll-behavior: smooth;
+}
+
+body {
+    padding-top: 100px;
+    margin: 0px;
+    font-family: "Gotham", sans-serif;
+    background: linear-gradient(180deg, rgb(0,0,0) 0%, rgb(30, 0, 0) 100%);
+    color: white;
+}
+
+nav {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 1;
+    background: #6f0000;
+    display: grid;
+    grid-template-columns: 40% auto auto auto auto;
+    align-items: center;
+    padding: 5px;
+}    
+
+nav a {
+    color: white;
+    font-weight: 600;
+    font-size: 1.85em;
+    text-decoration: none;
+}
+
+nav a:hover {
+    border-left: solid 4px white;
+    padding-left: 15px;
+    margin-left: -19px;
+    transition: all 50ms ease;
+}
+
+nav img {
+    padding-left: 25px;
+    transition: all 500ms ease;
+}
+
+nav img:hover {
+    padding-left: 35px;
+    scale: 1.1;
+    cursor: pointer;
+}
+
+.logo {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.info {
+    border-top: solid 5px white;
+    margin-top: 45%;
+    padding: 5%;
+    font-size: 1.5rem;
+}
+
+.info-nadpis {
+    font-weight: bold;
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.info-text {
+    margin-left: 2%;
+}
+
+.info-tym {
+    margin-left: 1%;
+}
+
+.tym {
+    margin: 3% 0 1% 0;
+    font-size: 2rem;
+}
+
+.obrazky-nadpis {
+    font-weight: bold;
+    font-size: 3rem;
+    margin: 35px 0 50px 0;
+    padding-left: 5%;
+}
+
+.obrazky {
+    display: grid;
+    justify-items: center;
+}
+
+.obrazky img {
+    width: 50%;
+    margin-bottom: 50px;
+    transition: all 500ms ease;
+}
+
+.obrazky img:hover {
+    scale: 1.05;
+}
