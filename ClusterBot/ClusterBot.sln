@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33213.308
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Top-down-shooter", "Top-down-shooter\Top-down-shooter.csproj", "{BFD308DC-30B0-452B-BCCF-0AF7961BD821}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClusterBot", "Top-down-shooter\ClusterBot.csproj", "{BFD308DC-30B0-452B-BCCF-0AF7961BD821}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

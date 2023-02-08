@@ -37,7 +37,6 @@ namespace Top_down_shooter
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
@@ -101,23 +100,11 @@ namespace Top_down_shooter
             this.label1.TabIndex = 0;
             this.label1.Text = "Kills: 0";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("Verdana", 10F);
-            this.label4.Location = new System.Drawing.Point(123, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(37, 17);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Grid";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(984, 711);
-            this.Controls.Add(this.label4);
+            this.ClientSize = new System.Drawing.Size(984, 961);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -125,8 +112,8 @@ namespace Top_down_shooter
             this.Controls.Add(this.pictureBox2);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(1000, 750);
-            this.MinimumSize = new System.Drawing.Size(1000, 750);
+            this.MaximumSize = new System.Drawing.Size(1000, 1000);
+            this.MinimumSize = new System.Drawing.Size(1000, 1000);
             this.Name = "Form1";
             this.Text = "Clusterbot";
             this.Activated += new System.EventHandler(this.Form1_Activated);
@@ -147,7 +134,6 @@ namespace Top_down_shooter
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label4;
     }
 }
 

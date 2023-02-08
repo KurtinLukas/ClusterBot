@@ -50,14 +50,14 @@ namespace Top_down_shooter
         private void Form1_Load(object sender, EventArgs e)
         {
             //fullscreen
-            /*TopMost = true;
-            FormBorderStyle = FormBorderStyle.None;
-            WindowState = FormWindowState.Maximized;
-            */
+            TopMost = true;
+            //FormBorderStyle = FormBorderStyle.None;
+            //WindowState = FormWindowState.Maximized;
+            
             player = new Character(400, 300);
             speed = 10; 
             diagonalSpeed = speed / Math.Sqrt(2);
-            int pathRemoveIndex = basePath.IndexOf("Top-down-shooter") + 17;
+            int pathRemoveIndex = basePath.IndexOf("ClusterBot") + 11;
             basePath = basePath.Remove(pathRemoveIndex);
             this.Cursor = ActuallyLoadCursor(basePath + @"Assets\Textures\Cursor.cur");
 
@@ -159,8 +159,6 @@ namespace Top_down_shooter
             // Update mouse position
             mouseX = e.X;
             mouseY = e.Y;
-
-            label4.Text = "GridItem: " + mapGrid[e.X / 10, e.Y / 10].ToString();  //e.X / 10, e.Y / 10
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -404,11 +402,6 @@ namespace Top_down_shooter
                     }
                 }
             }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Close();
         }
     }
 }
