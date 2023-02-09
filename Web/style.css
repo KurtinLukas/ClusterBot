@@ -55,15 +55,6 @@ nav img:hover {
     transform: translate(-50%, -50%);
 }
 
-@media (max-width: 1000px) {
-    .logo {
-        position: absolute;
-    	top: 15%;
-    	left: 50%;
-    	transform: translate(-50%, -50%);
-    }
-}
-
 .info {
     border-top: solid 5px white;
     margin-top: 45%;
@@ -86,7 +77,7 @@ nav img:hover {
 }
 
 .tym {
-    margin: 3% 0 1% 0;
+    margin: 4% 0 1% 0;
     font-size: 2rem;
 }
 
@@ -153,6 +144,26 @@ nav img:hover {
     vertical-align: top;
 }
 
+.kontakty-grid {
+    display: grid; 
+    grid-template-columns: auto 90%;
+    margin: 5% 0 3% 6%;
+}
+
 .kontakty {
     font-size: 1.5rem;
+}
+
+.kontakty-nadpis {
+    font-size: 2rem;
+}
+
+@media (max-width: 1000px) {
+    .logo {
+    	top: 15%;
+    }
+    .kontakty-grid {
+        grid-template-columns: auto 75%;
+        margin-bottom: 10%;
+    }
 }
