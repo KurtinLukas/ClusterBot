@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BFD308DC-30B0-452B-BCCF-0AF7961BD821}</ProjectGuid>
+    <ProjectGuid>{9E50CA04-03E9-4D5C-B5A7-90624876C4CF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Top_down_shooter</RootNamespace>
     <AssemblyName>Top-down-shooter</AssemblyName>

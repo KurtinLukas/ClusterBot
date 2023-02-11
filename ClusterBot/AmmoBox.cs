@@ -1,8 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Drawing;
 
-public class Class1
+namespace Top_down_shooter
 {
-	public Class1()
-	{
-	}
+    public class AmmoBox
+    {
+        public int X;
+        public int Y;
+    }
 }

@@ -1,0 +1,9 @@
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\bin\Release\Top-down-shooter.exe.config
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\bin\Release\Top-down-shooter.exe
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\bin\Release\Top-down-shooter.pdb
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\obj\Release\Top_down_shooter.Form1.resources
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\obj\Release\Top_down_shooter.Properties.Resources.resources
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\obj\Release\ClusterBot.csproj.GenerateResource.cache
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\obj\Release\ClusterBot.csproj.CoreCompileInputs.cache
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\obj\Release\Top-down-shooter.exe
+E:\GitHub\Top-down-shooter\ClusterBot\Top-down-shooter\obj\Release\Top-down-shooter.pdb

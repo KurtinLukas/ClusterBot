@@ -59,9 +59,9 @@ namespace Top_down_shooter
             diagonalSpeed = speed / Math.Sqrt(2);
             int pathRemoveIndex = basePath.IndexOf("ClusterBot") + 11;
             basePath = basePath.Remove(pathRemoveIndex);
-            this.Cursor = ActuallyLoadCursor(basePath + @"Assets\Textures\Cursor.cur");
-
-            
+            MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
+            IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
+            Cursor = new Cursor(cursor);
         }
 
         private void Form1_Activated(object sender, EventArgs e)
@@ -75,7 +75,7 @@ namespace Top_down_shooter
                     mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
                 }
             }
-            for(int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i++)
                 SpawnEnemy();
         }
 
@@ -366,10 +366,6 @@ namespace Top_down_shooter
             graphics.DrawImage(playerMap, player.X, player.Y);
         }
 
-        public static Cursor ActuallyLoadCursor(String path)
-        {
-            return new Cursor(LoadCursorFromFile(path));
-        }
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern IntPtr LoadCursorFromFile(string fileName);
 
