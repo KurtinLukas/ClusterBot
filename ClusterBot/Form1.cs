@@ -241,8 +241,9 @@ namespace Top_down_shooter
             //bot movement test
             foreach (Character c in enemies)
             {
-                c.MoveBy(rng.Next(-3, 3), rng.Next(-3,3));
-                ValidateCharGrid(c);
+                //c.MoveBy(rng.Next(-3, 3), rng.Next(-3,3));
+                c.MoveBy(1, 1);
+                //ValidateCharGrid(c);
             }
 
             // Ammo pickup

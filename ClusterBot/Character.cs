@@ -47,8 +47,23 @@ namespace Top_down_shooter
                 }
             }
 
-            if ((posX < 0 && (mapGrid[X / 10, Y / 10 + 2].charOnGrid != null || mapGrid[X / 10, Y / 10 + 8].charOnGrid != null)) ||
-                (posX > 0 && (mapGrid[X / 10 + 11, Y / 10 + 2].charOnGrid != null || mapGrid[X / 10 + 11, Y / 10 + 8].charOnGrid != null)))
+            if (posX < 0){
+                for(int i = Y / 10 + 2; i < (Y + height) / 10 - 1; i++)
+                {
+                    if (mapGrid[X / 10 - 1, i].material != GridItem.Material.Air)
+                        X -= posX;
+                    //mapGrid[X / 10 - 1, i].charOnGrid != null || 
+                }
+            }
+            else if (posX > 0) {
+                for (int i = Y / 10 + 2; i < (Y + height) / 10 - 1; i++)
+                {
+                    if (mapGrid[X / 10 + 11, i].material != GridItem.Material.Air) ;
+                        //X -= posX;
+                }
+            } 
+            //mapGrid[X / 10, Y / 10 + 2].charOnGrid != null || mapGrid[X / 10, Y / 10 + 8].charOnGrid != null))
+            //mapGrid[X / 10 + 11, Y / 10 + 2].charOnGrid != null || mapGrid[X / 10 + 11, Y / 10 + 8].charOnGrid != null))
             {
                 X -= posX;
             }
