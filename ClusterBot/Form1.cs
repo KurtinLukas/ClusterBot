@@ -50,7 +50,7 @@ namespace Top_down_shooter
         private void Form1_Load(object sender, EventArgs e)
         {
             //fullscreen
-            TopMost = true;
+            //TopMost = true;
             //FormBorderStyle = FormBorderStyle.None;
             //WindowState = FormWindowState.Maximized;
             
@@ -59,7 +59,7 @@ namespace Top_down_shooter
             diagonalSpeed = speed / Math.Sqrt(2);
             int pathRemoveIndex = basePath.IndexOf("ClusterBot") + 11;
             basePath = basePath.Remove(pathRemoveIndex);
-            MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
+            //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
             IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
             Cursor = new Cursor(cursor);
         }
@@ -117,6 +117,7 @@ namespace Top_down_shooter
                 case Keys.D: right = true; break;
                 case Keys.W: up = true; break;
                 case Keys.S: down = true; break;
+                case Keys.M: SpawnEnemy(); break;
             }
         }
 
@@ -379,7 +380,7 @@ namespace Top_down_shooter
         public void SpawnEnemy()
         {
             Thread.Sleep(1);
-            Character enemy = new Character(rng.Next(0,ActiveForm.Width - 100), rng.Next(0, rng.Next(ActiveForm.Height - 100)));
+            Character enemy = new Character(rng.Next(60,ActiveForm.Width - 100), rng.Next(0, rng.Next(ActiveForm.Height - 100)));
             enemies.Add(enemy);
             ValidateCharGrid(enemy);
         }
