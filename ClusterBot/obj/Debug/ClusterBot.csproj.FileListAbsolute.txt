@@ -18,3 +18,14 @@ E:\GitHub\cb\ClusterBot\obj\Debug\ClusterBot.csproj.GenerateResource.cache
 E:\GitHub\cb\ClusterBot\obj\Debug\ClusterBot.csproj.CoreCompileInputs.cache
 E:\GitHub\cb\ClusterBot\obj\Debug\Top-down-shooter.exe
 E:\GitHub\cb\ClusterBot\obj\Debug\Top-down-shooter.pdb
+G:\RPR\ClusterBot\ClusterBot\bin\Debug\Top-down-shooter.exe.config
+G:\RPR\ClusterBot\ClusterBot\bin\Debug\Top-down-shooter.exe
+G:\RPR\ClusterBot\ClusterBot\bin\Debug\Top-down-shooter.pdb
+G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.AssemblyReference.cache
+G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.SuggestedBindingRedirects.cache
+G:\RPR\ClusterBot\ClusterBot\obj\Debug\Top_down_shooter.Form1.resources
+G:\RPR\ClusterBot\ClusterBot\obj\Debug\Top_down_shooter.Properties.Resources.resources
+G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.GenerateResource.cache
+G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.CoreCompileInputs.cache
+G:\RPR\ClusterBot\ClusterBot\obj\Debug\Top-down-shooter.exe
+G:\RPR\ClusterBot\ClusterBot\obj\Debug\Top-down-shooter.pdb

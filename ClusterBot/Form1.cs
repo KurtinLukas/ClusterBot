@@ -292,7 +292,7 @@ namespace Top_down_shooter
                 }
             }
 
-            // Aiming angle calculation
+            // Player angle calculation
             player.centerX = player.X + player.width / 2;
             player.centerY = player.Y + player.height / 2;
             int diffX = player.centerX - mouseX;
@@ -306,6 +306,41 @@ namespace Top_down_shooter
             if (player.centerY < mouseY)
                 angle = 360 - angle;
             angle -= 90;
+
+            // Enemy angle calculation
+            foreach (Character enemy in enemies)
+            {
+                enemy.centerX = enemy.X + enemy.width / 2;
+                enemy.centerY = enemy.Y + enemy.height / 2;
+                int enemyDiffX = enemy.centerX - player.centerX;
+                int enemyDiffY = Math.Abs(enemy.centerY - player.centerY);
+                double enemyPrepona = Math.Sqrt(enemyDiffY * enemyDiffY + enemyDiffX * enemyDiffX);
+                if (enemyDiffX < 0)
+                    enemy.angle = Math.Acos(enemyDiffX / enemyPrepona);
+                else
+                    enemy.angle = Math.Asin(enemyDiffY / enemyPrepona);
+                enemy.angle *= 180 / Math.PI;
+                if (enemy.centerY < player.centerY)
+                    enemy.angle = 360 - enemy.angle;
+                enemy.angle -= 90;
+
+                if (rng.Next(1, 100) == 1)
+                {
+                    // Shoot a bullet
+                    double bulletAngle = enemy.angle + rng.Next(-2, 3);
+                    double rad = bulletAngle * Math.PI / 180;
+                    //hodně cursed výpočty
+                    //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
+                    Bullet bullet = new Bullet(enemy.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), enemy.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), (float)angle, false);
+                    bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
+                    bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
+                    bullet.rotation = (float)enemy.angle;
+                    bullets.Add(bullet);
+
+                    //Přehraje zvuk v cestě
+                    new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Shoot.wav");
+                }
+            }
 
             label1.Text = "Score: " + score;
             pictureBox2.Invalidate();
@@ -355,16 +390,24 @@ namespace Top_down_shooter
                 graphics.Restore(state);
             }
             graphics.Restore(state);
-            foreach(Character enemy in enemies)
+
+            // Enemy rotation
+            foreach (Character enemy in enemies)
             {
+                state = graphics.Save();
+                graphics.TranslateTransform(enemy.centerX, enemy.centerY);
+                graphics.RotateTransform((float)enemy.angle);
+                graphics.TranslateTransform(-enemy.centerX, -enemy.centerY);
                 graphics.DrawImage(enemyImage, enemy.X, enemy.Y);
+                graphics.Restore(state);
                 graphics.DrawRectangle(new Pen(Color.Lime, 5), enemy.X + 10, enemy.Y + 120, (int)(0.7 * enemy.health), 10);
             }
-            // Image rotation
+            graphics.Restore(state);
+
+            // Player rotation
             graphics.TranslateTransform(player.centerX, player.centerY);
             graphics.RotateTransform((float)angle);
             graphics.TranslateTransform(-player.centerX, -player.centerY);
-
             graphics.DrawImage(playerMap, player.X, player.Y);
         }
 

@@ -16,6 +16,7 @@ namespace Top_down_shooter
         public int Y = 0;
         public int centerX;
         public int centerY;
+        public double angle;
         public int width = 100;
         public int height = 100;
         public int health = 100;
@@ -87,8 +88,8 @@ namespace Top_down_shooter
                     }
                 }
             }
-            
-            if (!collisionRight)
+
+            return; if (!collisionRight)
             {
                 for (int i = Y / 10 + 2; i < (Y + height) / 10 - 1; i++)
                 {
