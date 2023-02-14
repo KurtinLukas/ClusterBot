@@ -26,7 +26,7 @@ namespace Top_down_shooter
         private bool collisionUp;
         private bool collisionDown;
         //  metody
-        //pohyb
+        //pohybw
         public void MoveBy(int posX, int posY)
         {
             if (Form1.ActiveForm == null) 

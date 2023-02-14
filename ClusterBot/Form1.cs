@@ -28,7 +28,6 @@ namespace Top_down_shooter
         bool down = false;
         int speed;
         double diagonalSpeed;
-        double angle;
         int mouseX;
         int mouseY;
         bool resizing = false;
@@ -138,19 +137,7 @@ namespace Top_down_shooter
             {
                 score -= 5;
                 ammoCount--;
-                // Shoot a bullet
-                double bulletAngle = angle + rng.Next(-2, 3);
-                double rad = bulletAngle * Math.PI / 180;
-                //hodně cursed výpočty
-                //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
-                Bullet bullet = new Bullet(player.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), player.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), (float)angle, false);
-                bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
-                bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
-                bullet.rotation = (float)angle;
-                bullets.Add(bullet);
-
-                //Přehraje zvuk v cestě
-                new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Shoot.wav");
+                ShootBullet(player);
             }
         }
 
@@ -292,58 +279,54 @@ namespace Top_down_shooter
                 }
             }
 
-            // Player angle calculation
-            player.centerX = player.X + player.width / 2;
-            player.centerY = player.Y + player.height / 2;
-            int diffX = player.centerX - mouseX;
-            int diffY = Math.Abs(player.centerY - mouseY);
-            double prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
-            if (diffX < 0)
-                angle = Math.Acos(diffX / prepona);
-            else
-                angle = Math.Asin(diffY / prepona);
-            angle *= 180 / Math.PI;
-            if (player.centerY < mouseY)
-                angle = 360 - angle;
-            angle -= 90;
+            // Player angle
+            player.angle = CalcAngle(player, mouseX, mouseY);
 
-            // Enemy angle calculation
+            // Enemy angle
             foreach (Character enemy in enemies)
             {
-                enemy.centerX = enemy.X + enemy.width / 2;
-                enemy.centerY = enemy.Y + enemy.height / 2;
-                int enemyDiffX = enemy.centerX - player.centerX;
-                int enemyDiffY = Math.Abs(enemy.centerY - player.centerY);
-                double enemyPrepona = Math.Sqrt(enemyDiffY * enemyDiffY + enemyDiffX * enemyDiffX);
-                if (enemyDiffX < 0)
-                    enemy.angle = Math.Acos(enemyDiffX / enemyPrepona);
-                else
-                    enemy.angle = Math.Asin(enemyDiffY / enemyPrepona);
-                enemy.angle *= 180 / Math.PI;
-                if (enemy.centerY < player.centerY)
-                    enemy.angle = 360 - enemy.angle;
-                enemy.angle -= 90;
-
+                enemy.angle = CalcAngle(enemy, player.centerX, player.centerY);
                 if (rng.Next(1, 100) == 1)
-                {
-                    // Shoot a bullet
-                    double bulletAngle = enemy.angle + rng.Next(-2, 3);
-                    double rad = bulletAngle * Math.PI / 180;
-                    //hodně cursed výpočty
-                    //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
-                    Bullet bullet = new Bullet(enemy.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), enemy.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), (float)angle, false);
-                    bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
-                    bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
-                    bullet.rotation = (float)enemy.angle;
-                    bullets.Add(bullet);
-
-                    //Přehraje zvuk v cestě
-                    new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Shoot.wav");
-                }
+                    ShootBullet(enemy);
             }
 
             label1.Text = "Score: " + score;
             pictureBox2.Invalidate();
+        }
+
+        public double CalcAngle(Character character, int x, int y)
+        {
+            double calcAngle;
+            character.centerX = character.X + character.width / 2;
+            character.centerY = character.Y + character.height / 2;
+            int diffX = character.centerX - x;
+            int diffY = Math.Abs(character.centerY - y);
+            double prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
+            if (diffX < 0)
+                calcAngle = Math.Acos(diffX / prepona);
+            else
+                calcAngle = Math.Asin(diffY / prepona);
+            calcAngle *= 180 / Math.PI;
+            if (character.centerY < y)
+                calcAngle = 360 - calcAngle;
+            return calcAngle -= 90;
+        }
+
+        public void ShootBullet(Character character)
+        {
+            // Shoot a bullet
+            double bulletAngle = character.angle + rng.Next(-2, 3);
+            double rad = bulletAngle * Math.PI / 180;
+            //hodně cursed výpočty
+            //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
+            Bullet bullet = new Bullet(character.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), character.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), (float)character.angle, false);
+            bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
+            bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
+            bullet.rotation = (float)character.angle;
+            bullets.Add(bullet);
+
+            //Přehraje zvuk v cestě
+            new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Shoot.wav");
         }
 
         public static void PlaySound(object path)
@@ -353,7 +336,7 @@ namespace Top_down_shooter
 
         private void game_graphics(object sender, PaintEventArgs e)
         {
-            if (ActiveForm == null || double.IsNaN(angle)) return;
+            if (ActiveForm == null || double.IsNaN(player.angle)) return;
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -376,14 +359,8 @@ namespace Top_down_shooter
                 Bullet b = bullets[i];
                 if (b.X < pictureBox2.Width && b.Y < pictureBox2.Height && b.X > 0 && b.Y > 0)
                 {
-                    //save a restore mají vrátit Graphics do stavu před úpravou, samozřejmě nefunguje
-                    //graphics.TranslateTransform(bulletImage.Width/2, bulletImage.Height/2);
-                    graphics.TranslateTransform(b.X, b.Y);
-                    
-                    graphics.RotateTransform(b.rotation);
-                    graphics.TranslateTransform(-b.X, -b.Y);
+                    Rotate(b.X, b.Y, b.rotation, graphics);
                     graphics.DrawImage(bulletImage, b.X, b.Y);
-                    //b.Draw(bulletImage, angle, e.Graphics);
                 }
                 else
                     bullets.RemoveAt(i);
@@ -395,9 +372,7 @@ namespace Top_down_shooter
             foreach (Character enemy in enemies)
             {
                 state = graphics.Save();
-                graphics.TranslateTransform(enemy.centerX, enemy.centerY);
-                graphics.RotateTransform((float)enemy.angle);
-                graphics.TranslateTransform(-enemy.centerX, -enemy.centerY);
+                Rotate(enemy.centerX, enemy.centerY, enemy.angle, graphics);
                 graphics.DrawImage(enemyImage, enemy.X, enemy.Y);
                 graphics.Restore(state);
                 graphics.DrawRectangle(new Pen(Color.Lime, 5), enemy.X + 10, enemy.Y + 120, (int)(0.7 * enemy.health), 10);
@@ -405,10 +380,15 @@ namespace Top_down_shooter
             graphics.Restore(state);
 
             // Player rotation
-            graphics.TranslateTransform(player.centerX, player.centerY);
-            graphics.RotateTransform((float)angle);
-            graphics.TranslateTransform(-player.centerX, -player.centerY);
+            Rotate(player.centerX, player.centerY, player.angle, graphics);
             graphics.DrawImage(playerMap, player.X, player.Y);
+        }
+
+        public void Rotate(int x, int y, double angle, Graphics g)
+        {
+            g.TranslateTransform(x, y);
+            g.RotateTransform((float)angle);
+            g.TranslateTransform(-x, -y);
         }
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
