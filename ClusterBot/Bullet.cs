@@ -18,6 +18,7 @@ namespace Top_down_shooter
         private double moveX;
         private double moveY;
         public bool damagePlayer;
+        public Character originChar;
         
         public Bullet(int x, int y, float rotation, bool damagePlayer)
         {

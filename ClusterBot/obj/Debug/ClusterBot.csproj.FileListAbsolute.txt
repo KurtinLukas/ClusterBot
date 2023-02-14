@@ -1,13 +1,7 @@
-E:\GitHub\ClusterBot\ClusterBot\bin\Debug\Top-down-shooter.exe.config
-E:\GitHub\ClusterBot\ClusterBot\bin\Debug\Top-down-shooter.exe
-E:\GitHub\ClusterBot\ClusterBot\bin\Debug\Top-down-shooter.pdb
 E:\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.AssemblyReference.cache
 E:\GitHub\ClusterBot\ClusterBot\obj\Debug\Top_down_shooter.Form1.resources
-E:\GitHub\ClusterBot\ClusterBot\obj\Debug\Top_down_shooter.Properties.Resources.resources
 E:\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.GenerateResource.cache
 E:\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.CoreCompileInputs.cache
-E:\GitHub\ClusterBot\ClusterBot\obj\Debug\Top-down-shooter.exe
-E:\GitHub\ClusterBot\ClusterBot\obj\Debug\Top-down-shooter.pdb
 E:\GitHub\cb\ClusterBot\bin\Debug\Top-down-shooter.exe.config
 E:\GitHub\cb\ClusterBot\bin\Debug\Top-down-shooter.exe
 E:\GitHub\cb\ClusterBot\bin\Debug\Top-down-shooter.pdb
@@ -39,3 +33,9 @@ M:\ITA3\matlj.04\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.GenerateR
 M:\ITA3\matlj.04\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.CoreCompileInputs.cache
 M:\ITA3\matlj.04\RPR\ClusterBot\ClusterBot\obj\Debug\Top-down-shooter.exe
 M:\ITA3\matlj.04\RPR\ClusterBot\ClusterBot\obj\Debug\Top-down-shooter.pdb
+E:\GitHub\ClusterBot\ClusterBot\bin\Debug\ClusterBot.exe.config
+E:\GitHub\ClusterBot\ClusterBot\bin\Debug\ClusterBot.exe
+E:\GitHub\ClusterBot\ClusterBot\bin\Debug\ClusterBot.pdb
+E:\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.Properties.Resources.resources
+E:\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.exe
+E:\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.pdb

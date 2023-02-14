@@ -20,31 +20,35 @@ namespace Top_down_shooter
         public int width = 100;
         public int height = 100;
         public int health = 100;
-        private GridItem[,] mapGrid = Form1.mapGrid;
+        public bool isEnemy;
+        private GridItem[,] mapGrid;
         private bool collisionRight;
         private bool collisionLeft;
         private bool collisionUp;
         private bool collisionDown;
+        public Point target;
         //  metody
-        //pohybw
+        //pohyb
         public void MoveBy(int posX, int posY)
         {
-            if (Form1.ActiveForm == null) 
+            if (Form1.ActiveForm == null)
                 return;
-            
-            collisionRight = X + posX + width > Form1.ActiveForm.Width - 55;
+            mapGrid = Form1.mapGrid;
+
+            collisionRight = X + posX + width > Form1.ActiveForm.Width - 15;
             collisionLeft = X + posX < 15;
-            collisionUp = Y + posY < 80;
-            collisionDown = Y + posY + height > Form1.ActiveForm.Height - 35;
-            
+            collisionUp = Y + posY < 50;
+            collisionDown = Y + posY + height > Form1.ActiveForm.Height - 45;
+
             //can check for gridItem movement for optimalization
 
             //collision
             if (posX > 0 && !collisionRight) //pohyb doprava
             {
-                for (int i = Y / 10 + 2; i < Y / 10 + 9; i++)
+                X += posX;
+                for (int i = Y / 10 + 1; i < Y / 10 + 10; i++)
                 {
-                    if (mapGrid[X / 10 + 9, i].material != GridItem.Material.Air)
+                    if (mapGrid[X / 10 + 8, i].material != GridItem.Material.Air)
                     {
                         X -= posX;
                         collisionRight = true;
@@ -54,7 +58,8 @@ namespace Top_down_shooter
             }
             else if (posX < 0 && !collisionLeft) //pohyb doleva
             {
-                for (int i = Y / 10 + 2; i < Y / 10 + 9; i++)
+                X += posX;
+                for (int i = Y / 10 + 1; i < Y / 10 + 10; i++)
                 {
                     if (mapGrid[X / 10, i].material != GridItem.Material.Air)
                     {
@@ -66,9 +71,10 @@ namespace Top_down_shooter
             }
             if (posY > 0 && !collisionDown) //pohyb dolů
             {
-                for (int i = X / 10 + 1; i < X / 10 + 8; i++)
+                Y += posY;
+                for (int i = X / 10; i < X / 10 + 9; i++)
                 {
-                    if (mapGrid[i, Y / 10 + 10].material != GridItem.Material.Air)
+                    if (mapGrid[i, Y / 10 + 9].material != GridItem.Material.Air)
                     {
                         Y -= posY;
                         collisionDown = true;
@@ -78,7 +84,8 @@ namespace Top_down_shooter
             }
             else if (posY < 0 && !collisionUp) //pohyb nahoru
             {
-                for (int i = X / 10 + 1; i < X / 10 + 8; i++)
+                Y += posY;
+                for (int i = X / 10; i < X / 10 + 9; i++)
                 {
                     if (mapGrid[i, Y / 10 + 1].material != GridItem.Material.Air)
                     {
@@ -89,59 +96,49 @@ namespace Top_down_shooter
                 }
             }
 
-            return; if (!collisionRight)
+            if (!collisionRight)
             {
-                for (int i = Y / 10 + 2; i < (Y + height) / 10 - 1; i++)
+                for (int i = Y / 10 + 1; i < Y / 10 + 10; i++)
                 {
-                    mapGrid[X / 10 + 9, i].material = GridItem.Material.Air;
+                    mapGrid[X / 10 + 8, i].material = GridItem.Material.Air;
+                    mapGrid[X / 10 + 8, i].charOnGrid = null;
                 }
-                return;
             }
             if (!collisionLeft)
             {
-                for (int i = Y / 10 + 2; i < (Y + height) / 10 - 1; i++)
+                for (int i = Y / 10 + 1; i < Y / 10 + 10; i++)
                 {
                     mapGrid[X / 10, i].material = GridItem.Material.Air;
+                    mapGrid[X / 10, i].charOnGrid = null;
                 }
-                return;
             }
             if (!collisionUp)
             {
-                for (int i = X / 10 + 1; i < (X + width) / 10 + 8; i++)
+                for (int i = X / 10; i < X / 10 + 9; i++)
                 {
                     mapGrid[i, Y / 10 + 1].material = GridItem.Material.Air;
+                    mapGrid[i, Y / 10 + 1].charOnGrid = null;
                 }
-                return;
             }
             if (!collisionDown)
             {
-                for (int i = X / 10 + 1; i < (X + width) / 10 + 8; i++)
+                for (int i = X / 10; i < X / 10 + 9; i++)
                 {
                     mapGrid[i, Y / 10 + 9].material = GridItem.Material.Air;
+                    mapGrid[i, Y / 10 + 9].charOnGrid = null;
                 }
-                return;
             }
-
-            //clear old position when no collisions
-            /*for (int i = X / 10; i < (X + width) / 10 - 1; i++)
-            {
-                for (int j = Y / 10 + 1; j < (Y + height) / 10; j++)
-                {
-                    mapGrid[i, j].material = GridItem.Material.Air;
-                    mapGrid[i, j].charOnGrid = null;
-                }
-            }*/
+            
             //create new position
-            for (int i = X / 10 + 1; i < (X + width) / 10 - 2; i++)
+            for (int i = X / 10 + 1; i < X / 10 + 8; i++)
             {
-                for (int j = Y / 10 + 2; j < (Y + height) / 10 - 1; j++)
+                for (int j = Y / 10 + 2; j < Y / 10 + 9; j++)
                 {
                     mapGrid[i, j].material = GridItem.Material.Enemy;
                     mapGrid[i, j].charOnGrid = this;
                 }
             }
 
-            
             position = new Point(X, Y);
         }
 
@@ -154,21 +151,17 @@ namespace Top_down_shooter
         //ostatní
         public void Die()
         {
-            for (int i = X / 10 + 1; i < (X + width) / 10 - 2; i++)
+            for (int i = X / 10 + 1; i < X / 10 + 8; i++)
             {
-                for (int j = Y / 10 + 2; j < (Y + height) / 10 - 1; j++)
+                for (int j = Y / 10 + 2; j < Y / 10 + 9; j++)
                 {
-                    //mapGrid[i, j].material = GridItem.Material.Air;
+                    mapGrid[i, j].material = GridItem.Material.Air;
                     mapGrid[i, j].charOnGrid = null;
                 }
             }
         }
 
         //deklarace
-        public Character()
-        {
-            position = new Point(X, Y);
-        }
         public Character(int posX, int posY)
         {
             X = posX;

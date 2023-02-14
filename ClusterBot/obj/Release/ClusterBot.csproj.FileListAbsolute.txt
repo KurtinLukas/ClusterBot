@@ -1,0 +1,9 @@
+E:\GitHub\ClusterBot\ClusterBot\obj\Release\Top_down_shooter.Form1.resources
+E:\GitHub\ClusterBot\ClusterBot\obj\Release\ClusterBot.csproj.GenerateResource.cache
+E:\GitHub\ClusterBot\ClusterBot\obj\Release\ClusterBot.csproj.CoreCompileInputs.cache
+E:\GitHub\ClusterBot\ClusterBot\obj\Release\ClusterBot.Properties.Resources.resources
+E:\GitHub\ClusterBot\ClusterBot\bin\Release\ClusterBot.exe.config
+E:\GitHub\ClusterBot\ClusterBot\bin\Release\ClusterBot.exe
+E:\GitHub\ClusterBot\ClusterBot\bin\Release\ClusterBot.pdb
+E:\GitHub\ClusterBot\ClusterBot\obj\Release\ClusterBot.exe
+E:\GitHub\ClusterBot\ClusterBot\obj\Release\ClusterBot.pdb
