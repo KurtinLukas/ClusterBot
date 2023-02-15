@@ -166,4 +166,7 @@ nav img:hover {
         grid-template-columns: auto 75%;
         margin-bottom: 10%;
     }
+    nav {
+        grid-template-columns: 35% auto auto auto auto;
+    }    
 }
