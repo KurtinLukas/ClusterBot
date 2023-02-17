@@ -17,12 +17,17 @@ namespace Top_down_shooter
 {
     public partial class Form1 : Form
     {
+        // Character
         Character player;
         List<Bullet> bullets = new List<Bullet>();
         List<Consumable> ammoBoxes = new List<Consumable>();
         List<Consumable> medkits = new List<Consumable>();
         List<Label> labels = new List<Label>();
         List<int> ticks = new List<int>();
+
+        // Menu
+        Menu menu;
+
         Random rng = new Random();
         bool left = false;
         bool right = false;
@@ -59,6 +64,9 @@ namespace Top_down_shooter
             //TopMost = true;
             //FormBorderStyle = FormBorderStyle.None;
             //WindowState = FormWindowState.Maximized;
+
+            this.KeyPreview = true;
+            menu = new Menu(this);
 
             player = new Character(400, 300);
             player.isEnemy = false;
@@ -159,6 +167,14 @@ namespace Top_down_shooter
                 case Keys.W: up = true; break;
                 case Keys.S: down = true; break;
                 case Keys.M: SpawnEnemy(); break;
+                case Keys.Escape:
+                    {
+                        if (menu.visible)
+                            menu.Hide(this.timer1);
+                        else
+                            menu.Show(this.timer1);
+                        break;
+                    }
             }
 
         }

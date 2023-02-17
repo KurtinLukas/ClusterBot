@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bullet.cs" />
+    <Compile Include="Menu.cs" />
     <Compile Include="Consumable.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
