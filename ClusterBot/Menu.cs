@@ -14,9 +14,18 @@ namespace Top_down_shooter
         Button playBtn = new Button();
         public bool visible = true;
 
+        Form form;
+        Timer timer;
+        PictureBox menuPic = new PictureBox();
 
-        public Menu(Form form)
+        public Menu(Form form, Timer timer)
         {
+            this.form = form;
+            this.timer = timer;
+
+            menuPic.Paint += MenuPic_Paint;
+            menuPic.Invalidate();
+
             playBtn.Name = "playBtn";
             playBtn.Text = "PLAY";
             playBtn.Location = new Point(300, 300);
@@ -25,34 +34,45 @@ namespace Top_down_shooter
             playBtn.BackColor = Color.Black;
             playBtn.ForeColor = Color.White;
             playBtn.Click += playBtn_click;
-            form.Controls.Add(playBtn);
+            this.form.Controls.Add(playBtn);
+            this.form.Controls.Add(menuPic);
+            menuPic.BringToFront();
             playBtn.BringToFront();
             buttons.Add(playBtn);
         }
 
-        private void playBtn_click(object sender, EventArgs e)
+        private void MenuPic_Paint(object sender, PaintEventArgs e)
         {
-           
+            Graphics g = e.Graphics;
+            g.FillRectangle(Brushes.Black, 20, 55, 200, 100);
         }
 
-        public void Show(Timer timer)
+        private void playBtn_click(object sender, EventArgs e)
         {
+            Hide();
+        }
+
+        public void Show()
+        {
+            menuPic.Invalidate();
             foreach (Button btn in buttons)
             {
                 btn.Visible = true;
             }
+            menuPic.Visible = true;
             timer.Stop();
             visible = true;
-        }   
-        
-        public void Hide(Timer timer)
+        }
+
+        public void Hide()
         {
             foreach (Button btn in buttons)
             {
                 btn.Visible = false;
             }
+            menuPic.Visible = false;
             timer.Start();
-            visible = true;
+            visible = false;
         }
     }
 }

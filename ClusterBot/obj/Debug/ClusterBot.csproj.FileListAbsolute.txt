@@ -38,3 +38,13 @@ G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csprojAssemblyReference.cache
 G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.Properties.Resources.resources
 G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.exe
 G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.pdb
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\bin\Debug\ClusterBot.exe.config
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\bin\Debug\ClusterBot.exe
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\bin\Debug\ClusterBot.pdb
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.AssemblyReference.cache
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\obj\Debug\Top_down_shooter.Form1.resources
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\obj\Debug\ClusterBot.Properties.Resources.resources
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.GenerateResource.cache
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.CoreCompileInputs.cache
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\obj\Debug\ClusterBot.exe
+D:\School\SPST\RPR\Projekt2\ClusterBot\ClusterBot\obj\Debug\ClusterBot.pdb

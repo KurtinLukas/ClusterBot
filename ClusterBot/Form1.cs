@@ -66,7 +66,7 @@ namespace Top_down_shooter
             //WindowState = FormWindowState.Maximized;
 
             this.KeyPreview = true;
-            menu = new Menu(this);
+            menu = new Menu(this, timer1);
 
             player = new Character(400, 300);
             player.isEnemy = false;
@@ -167,14 +167,7 @@ namespace Top_down_shooter
                 case Keys.W: up = true; break;
                 case Keys.S: down = true; break;
                 case Keys.M: SpawnEnemy(); break;
-                case Keys.Escape:
-                    {
-                        if (menu.visible)
-                            menu.Hide(this.timer1);
-                        else
-                            menu.Show(this.timer1);
-                        break;
-                    }
+                case Keys.Escape: menu.Show(); break;
             }
 
         }
@@ -192,11 +185,14 @@ namespace Top_down_shooter
 
         private void pictureBox2_MouseDown(object sender, MouseEventArgs e)
         {
-            if (ammoCount > 0 && e.Button == MouseButtons.Left)
+            if (!menu.visible)
             {
-                score -= 3;
-                ammoCount--;
-                ShootBullet(player);
+                if (ammoCount > 0 && e.Button == MouseButtons.Left)
+                {
+                    score -= 3;
+                    ammoCount--;
+                    ShootBullet(player);
+                }
             }
         }
 
@@ -248,7 +244,7 @@ namespace Top_down_shooter
                 if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0 && mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
                 {
                     Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
-                    if(tempChar != null)
+                    if (tempChar != null)
                     {
                         if (tempChar != b.originChar && b.originChar.isEnemy != tempChar.isEnemy) //action for enemies hit
                         {
@@ -274,7 +270,7 @@ namespace Top_down_shooter
                                         + " score of " + score,
                                         "You dead.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                                    if(score >= highscore)
+                                    if (score >= highscore)
                                     {
                                         StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.txt");
                                         writer.Write(score.ToString());
@@ -311,10 +307,10 @@ namespace Top_down_shooter
                             }
                         }
                     }
-                    if(mapGrid[b.X / 10, b.Y / 10].material == GridItem.Material.Wall)
+                    if (mapGrid[b.X / 10, b.Y / 10].material == GridItem.Material.Wall)
                     {
                         bullets.Remove(b);
-                    }    
+                    }
                 }
             }
 
@@ -401,14 +397,14 @@ namespace Top_down_shooter
             player.angle = CalcAngle(player, mouseX, mouseY);
 
 
-            if(generateEnemies && timer % 200 == 0)
+            if (generateEnemies && timer % 200 == 0)
             {
                 for (int i = 0; i < timer / (1500 * i * 0.5); i++)
                     SpawnEnemy();
             }
-            if(timer % 500 == 0)
+            if (timer % 500 == 0)
             {
-                if(rng.Next(0,2) == 0)
+                if (rng.Next(0, 2) == 0)
                 {
                     ammoBoxes.Add(new Consumable(rng.Next(25, ActiveForm.Width - 125), rng.Next(80, ActiveForm.Height - 155), basePath + @"Assets\Textures\AmmoBox.png"));
                 }
@@ -423,7 +419,7 @@ namespace Top_down_shooter
                 enemy.angle = CalcAngle(enemy, player.centerX, player.centerY);
                 if (rng.Next(1, 100) == 1)
                     ShootBullet(enemy);
-                
+
                 if (Math.Abs(enemy.X - enemy.target.X) <= 5)
                     enemy.target.X = enemy.X;
                 if (Math.Abs(enemy.Y - enemy.target.Y) <= 5)
