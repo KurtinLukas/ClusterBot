@@ -64,16 +64,17 @@ namespace Top_down_shooter
             //TopMost = true;
             //FormBorderStyle = FormBorderStyle.None;
             //WindowState = FormWindowState.Maximized;
+            int pathRemoveIndex = basePath.IndexOf("ClusterBot") + 10;
+            basePath = basePath.Remove(pathRemoveIndex) + "/";
 
             this.KeyPreview = true;
-            menu = new Menu(this, timer1);
+            menu = new Menu(this, timer1, Image.FromFile(basePath + "Assets/Textures/main_logo.png"));
 
             player = new Character(400, 300);
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
-            int pathRemoveIndex = basePath.IndexOf("ClusterBot") + 10;
-            basePath = basePath.Remove(pathRemoveIndex) + "/";
+            
             //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
             IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
             Cursor = new Cursor(cursor);

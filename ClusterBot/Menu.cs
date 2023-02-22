@@ -18,17 +18,18 @@ namespace Top_down_shooter
         Timer timer;
         PictureBox menuPic = new PictureBox();
 
-        public Menu(Form form, Timer timer)
+        public Menu(Form form, Timer timer, Image image)
         {
             this.form = form;
             this.timer = timer;
 
+            menuPic.Location = new Point(100, 100);
+            menuPic.Size = new Size(800, 750);
             menuPic.Paint += MenuPic_Paint;
-            menuPic.Invalidate();
+            //menuPic.Image = image;
 
-            playBtn.Name = "playBtn";
             playBtn.Text = "PLAY";
-            playBtn.Location = new Point(300, 300);
+            playBtn.Location = new Point(150, 450);
             playBtn.AutoSize = true;
             playBtn.Font = new Font("Verdana", 25);
             playBtn.BackColor = Color.Black;
@@ -44,7 +45,7 @@ namespace Top_down_shooter
         private void MenuPic_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            g.FillRectangle(Brushes.Black, 20, 55, 200, 100);
+            g.FillRectangle(Brushes.Black, 0, 0, 1000, 1000);
         }
 
         private void playBtn_click(object sender, EventArgs e)
@@ -54,7 +55,6 @@ namespace Top_down_shooter
 
         public void Show()
         {
-            menuPic.Invalidate();
             foreach (Button btn in buttons)
             {
                 btn.Visible = true;
