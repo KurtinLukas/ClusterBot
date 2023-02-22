@@ -43,7 +43,7 @@ namespace Top_down_shooter
 
         int score = 0;
         int killCount = 0;
-        int ammoCount = 100;
+        int ammoCount = 50;
 
         private string keyLogger = "";
         private bool debugMode = false;
@@ -70,11 +70,12 @@ namespace Top_down_shooter
             this.KeyPreview = true;
             menu = new Menu(this, timer1, Image.FromFile(basePath + "Assets/Textures/main_logo.png"));
 
-            player = new Character(400, 300);
+            player = new Character(400, 400);
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
-            
+            label1.Text = "Score: " + score;
+            label2.Text = "Ammo: " + ammoCount;
             //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
             IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
             Cursor = new Cursor(cursor);
@@ -277,10 +278,8 @@ namespace Top_down_shooter
                                         writer.Write(score.ToString());
                                         writer.Close();
                                     }
-                                    Close();
-                                    return;
+                                    Application.Restart();
                                 }
-                                else progressBar1.Value = player.health;
                             }
                             else
                             {
@@ -316,16 +315,10 @@ namespace Top_down_shooter
             }
 
             // Ammo pickup
-            label2.Text = "Ammo: " + ammoCount;
             if (ammoCount == 0)
                 label2.BackColor = Color.Red;
             else
                 label2.BackColor = Color.White;
-
-            if (player.health <= 30)
-                progressBar1.BackColor = Color.Red;
-            else
-                progressBar1.BackColor = Color.White;
 
             for (int i = 0; i < ammoBoxes.Count; i++)
             {
@@ -364,7 +357,6 @@ namespace Top_down_shooter
                         player.health += 30;
                         if (player.health > 100)
                             player.health = 100;
-                        progressBar1.Value = player.health;
                         medkits.RemoveAt(i);
                         Label lbl = new Label();
                         lbl.Name = i.ToString();
@@ -433,6 +425,8 @@ namespace Top_down_shooter
             }
 
             label1.Text = "Score: " + score;
+            label2.Text = "Ammo: " + ammoCount;
+            progressBar1.Value = player.health;
             pictureBox2.Invalidate();
         }
 
