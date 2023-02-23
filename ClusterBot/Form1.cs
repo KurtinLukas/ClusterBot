@@ -41,7 +41,7 @@ namespace Top_down_shooter
         int timer = 0;
         bool generateEnemies = true;
 
-        int score = 0;
+        public static int score = 0;
         int killCount = 0;
         int ammoCount = 50;
 
@@ -68,7 +68,7 @@ namespace Top_down_shooter
             basePath = basePath.Remove(pathRemoveIndex) + "/";
 
             this.KeyPreview = true;
-            menu = new Menu(this, timer1, Image.FromFile(basePath + "Assets/Textures/main_logo.png"));
+            menu = new Menu(this, timer1, basePath);
 
             player = new Character(400, 400);
             player.isEnemy = false;
