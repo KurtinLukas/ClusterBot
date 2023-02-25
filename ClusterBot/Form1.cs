@@ -37,7 +37,6 @@ namespace Top_down_shooter
         double diagonalSpeed;
         int mouseX;
         int mouseY;
-        bool resizing = false;
         int timer = 0;
         bool generateEnemies = true;
 
@@ -85,12 +84,24 @@ namespace Top_down_shooter
         private void Form1_Activated(object sender, EventArgs e)
         {
             //deklarace gridu
+            Bitmap mapImg = new Bitmap(basePath + "Assets/Textures/map.png");
             mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
             for (int i = 0; i < ActiveForm.Width / 10; i++)
             {
                 for (int j = 0; j < ActiveForm.Height / 10; j++)
                 {
-                    mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
+                    mapGrid[i, j] = new GridItem(i * 10, j * 10);
+                    Color clr = mapImg.GetPixel(i, j);
+                    switch (clr.ToArgb())
+                    {
+                        //bílá 
+                        case -1: mapGrid[i, j].material = GridItem.Material.Air; break;
+                        //černá
+                        case -16777216: mapGrid[i, j].material = GridItem.Material.Wall; break;
+                        //default žlutá v MS paint (např. bedna)
+                        case -3584: mapGrid[i, j].material = GridItem.Material.Object; break;
+                        default: mapGrid[i, j].material = GridItem.Material.Air; break;
+                    }
                 }
             }
             foreach (Character c in enemies)
@@ -101,8 +112,7 @@ namespace Top_down_shooter
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            resizing = true;
-            if (ActiveForm == null) return;
+            if (ActiveForm == null) Activate();
 
             //rekalkulace gridu
             mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
@@ -120,17 +130,16 @@ namespace Top_down_shooter
             progressBar1.Location = new Point(ActiveForm.Width - progressBar1.Width - 30, progressBar1.Location.Y);
             label3.Location = new Point(progressBar1.Location.X - label3.Width - 30, label3.Location.Y);
             label2.Location = new Point(ActiveForm.Width / 3, label2.Location.Y);
-
-
-            resizing = false;
         }
 
         Point moveVector = new Point(0, 0);
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             //console
-            if (e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Oemtilde)
+            {
                 keyLogger = "";
+            }
             else keyLogger += (char)e.KeyValue;
 
             switch (keyLogger)
@@ -209,7 +218,7 @@ namespace Top_down_shooter
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer++;
-            if (ActiveForm == null || resizing) return; //pokud je forma minimalizovaná tak ActiveForm == null
+            if (ActiveForm == null) return; //pokud je forma minimalizovaná tak ActiveForm == null
             // Movement & player grid calculation
             if (left)
             {
@@ -254,8 +263,11 @@ namespace Top_down_shooter
                             if (tempChar == player)
                             {
                                 player.health -= 7;
+
                                 if (player.health <= 0)
                                 {
+                                    player.health = 0;
+                                    
                                     StreamReader reader = new StreamReader(basePath + @"Save\Highscore.txt");
                                     if (!int.TryParse(reader.ReadToEnd(), out int highscore))
                                     {
@@ -280,6 +292,7 @@ namespace Top_down_shooter
                                     }
                                     Application.Restart();
                                 }
+                                progressBar1.Value = player.health;
                             }
                             else
                             {
@@ -313,6 +326,7 @@ namespace Top_down_shooter
                     }
                 }
             }
+            
 
             // Ammo pickup
             if (ammoCount == 0)
@@ -371,6 +385,7 @@ namespace Top_down_shooter
                         labels.Add(lbl);
                         ticks.Add(30);
                         new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Reload.wav");
+                        progressBar1.Value = player.health;
                     }
                 }
             }
@@ -426,7 +441,7 @@ namespace Top_down_shooter
 
             label1.Text = "Score: " + score;
             label2.Text = "Ammo: " + ammoCount;
-            progressBar1.Value = player.health;
+            
             pictureBox2.Invalidate();
         }
 

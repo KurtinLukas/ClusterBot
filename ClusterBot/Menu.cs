@@ -191,6 +191,7 @@ namespace Top_down_shooter
             this.form.Controls.Add(quit);
             quit.BringToFront();
             buttons.Add(quit);
+            
         }
 
         private void MenuPic_Paint(object sender, PaintEventArgs e)
@@ -250,6 +251,7 @@ namespace Top_down_shooter
                 btn.Visible = false;
             back.Visible = true;
             menuPic.Image = null;
+            
         }
 
         private void Back_Click(object sender, EventArgs e)
@@ -283,6 +285,7 @@ namespace Top_down_shooter
             menuPic.Visible = false;
             timer.Start();
             visible = false;
+            form.Activate();
         }
     }
 }

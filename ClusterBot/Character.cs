@@ -27,6 +27,7 @@ namespace Top_down_shooter
         private bool collisionUp;
         private bool collisionDown;
         public Point target;
+
         //  metody
         //pohyb
         public void MoveBy(int posX, int posY)
