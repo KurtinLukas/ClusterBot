@@ -16,7 +16,6 @@ namespace Top_down_shooter
         Button playBtn = new Button();
         Button resBtn = new Button();
         Button ctrlBtn = new Button();
-        Button save = new Button();
         Button load = new Button();
         Button ldrbrd = new Button();
         Button about = new Button();
@@ -70,19 +69,8 @@ namespace Top_down_shooter
             resBtn.BringToFront();
             buttons.Add(resBtn);
 
-            save.Text = "SAVE";
-            save.Location = new Point(150, 570);
-            save.AutoSize = true;
-            save.Font = new Font("Verdana", 25);
-            save.BackColor = Color.Black;
-            save.ForeColor = Color.White;
-            save.Click += Save_Click;
-            this.form.Controls.Add(save);
-            save.BringToFront();
-            buttons.Add(save);
-
-            load.Text = "LOAD";
-            load.Location = new Point(283, 570);
+            load.Text = "LOAD SCORE";
+            load.Location = new Point(150, 570);
             load.AutoSize = true;
             load.Font = new Font("Verdana", 25);
             load.BackColor = Color.Black;
@@ -217,14 +205,6 @@ namespace Top_down_shooter
             HideMain();
             controlsH.Visible = true;
             controlsTxt.Visible = true;
-        }
-
-        private void Save_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("zatim nic");
-            /*StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.txt");
-            writer.Write(score);
-            writer.Close();*/
         }
 
         private void Load_Click(object sender, EventArgs e)

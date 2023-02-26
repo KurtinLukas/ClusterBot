@@ -40,7 +40,8 @@ namespace Top_down_shooter
         int timer = 0;
         bool generateEnemies = true;
 
-        public static int score = 0;
+        int score = 0;
+        int highscore;
         int killCount = 0;
         int ammoCount = 50;
 
@@ -73,8 +74,8 @@ namespace Top_down_shooter
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
-            label1.Text = "Score: " + score;
-            label2.Text = "Ammo: " + ammoCount;
+            highscore = int.Parse(System.IO.File.ReadAllText(basePath + @"Save\Highscore.txt"));
+            label4.Text = "Highscore: " + highscore;
             //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
             IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
             Cursor = new Cursor(cursor);
@@ -112,7 +113,7 @@ namespace Top_down_shooter
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            if (ActiveForm == null) Activate();
+            if (ActiveForm == null) return;
 
             //rekalkulace gridu
             mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
@@ -268,12 +269,6 @@ namespace Top_down_shooter
                                 {
                                     player.health = 0;
                                     
-                                    StreamReader reader = new StreamReader(basePath + @"Save\Highscore.txt");
-                                    if (!int.TryParse(reader.ReadToEnd(), out int highscore))
-                                    {
-                                        highscore = score;
-                                    }
-                                    reader.Close();
                                     if (score < 0)
                                         MessageBox.Show("Really man? Negative score? Try again, for your own sake.",
                                         "You're actually so bad.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -326,13 +321,18 @@ namespace Top_down_shooter
                     }
                 }
             }
-            
+
+            if (score > highscore)
+                label1.BackColor = Color.Lime;
+            else
+                label1.BackColor = Color.Transparent;
+
 
             // Ammo pickup
             if (ammoCount == 0)
                 label2.BackColor = Color.Red;
             else
-                label2.BackColor = Color.White;
+                label2.BackColor = Color.Transparent;
 
             for (int i = 0; i < ammoBoxes.Count; i++)
             {
@@ -528,7 +528,12 @@ namespace Top_down_shooter
                 Rotate(enemy.centerX, enemy.centerY, enemy.angle, graphics);
                 graphics.DrawImage(enemyImage, enemy.X, enemy.Y);
                 graphics.Restore(state);
-                graphics.DrawRectangle(new Pen(Color.Lime, 5), enemy.X + 10, enemy.Y + 120, (int)(0.7 * enemy.health), 5);
+                Color color;
+                if (enemy.health <= 40)
+                    color = Color.Red;
+                else
+                    color = Color.Lime;
+                graphics.DrawRectangle(new Pen(color, 5), enemy.X + 10, enemy.Y + 120, (int)(0.7 * enemy.health), 5);
             }
             graphics.Restore(state);
             if (debugMode)
