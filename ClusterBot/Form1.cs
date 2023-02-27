@@ -451,7 +451,7 @@ namespace Top_down_shooter
             character.centerX = character.X + character.width / 2;
             character.centerY = character.Y + character.height / 2;
             int diffX = character.centerX - x;
-            int diffY = character.centerY - y;
+            int diffY = Math.Abs(character.centerY - y);
             double prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
             if (diffX < 0)
                 calcAngle = Math.Acos(diffX / prepona);
@@ -460,32 +460,17 @@ namespace Top_down_shooter
             calcAngle *= 180 / Math.PI;
             if (character.centerY < y)
                 calcAngle = 360 - calcAngle;
-            calcAngle -= 90;
-
-            // Strileni presne na cursor
-            character.weaponX = character.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + calcAngle * Math.PI / 180) * 30);
-            character.weaponY = character.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + calcAngle * Math.PI / 180) * 35);
-            diffX = character.weaponX - x;
-            diffY = Math.Abs(character.weaponY - y);
-            prepona = Math.Sqrt(diffY * diffY + diffX * diffX);
-            if (diffX < 0)
-                calcAngle = Math.Acos(diffX / prepona);
-            else
-                calcAngle = Math.Asin(diffY / prepona);
-            calcAngle *= 180 / Math.PI;
-            if (character.centerY < y)
-                calcAngle = 360 - calcAngle;
-            return calcAngle - 90;
+            return calcAngle - 90 - 1/(prepona / 2000);
         }
 
         public void ShootBullet(Character character)
         {
             // Shoot a bullet
-            double bulletAngle = character.angle + rng.Next(-3, 4);
+            double bulletAngle = character.angle + rng.Next(-2, 3);
             double rad = bulletAngle * Math.PI / 180;
 
             //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
-            Bullet bullet = new Bullet(character.weaponX, character.weaponY, (float)character.angle, false);
+            Bullet bullet = new Bullet(character.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), character.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), (float)character.angle, false);
             bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
             bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
             bullet.rotation = (float)character.angle;
