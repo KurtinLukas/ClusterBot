@@ -143,8 +143,8 @@ namespace Top_down_shooter
             position = new Point(X, Y);
         }
 
-        //akce
-        public void Shoot(Point direction)
+        //vykreslení
+        public void Draw()
         {
 
         }

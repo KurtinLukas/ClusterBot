@@ -17,8 +17,6 @@ namespace Top_down_shooter
 {
     public partial class Form1 : Form
     {
-        // Character
-        Character player;
         List<Bullet> bullets = new List<Bullet>();
         List<Consumable> ammoBoxes = new List<Consumable>();
         List<Consumable> medkits = new List<Consumable>();
@@ -48,10 +46,11 @@ namespace Top_down_shooter
         private string keyLogger = "";
         private bool debugMode = false;
 
+        static Character player;
         public static GridItem[,] mapGrid;
         public static List<Character> enemies = new List<Character>();
 
-        string basePath = Assembly.GetExecutingAssembly().CodeBase.Substring(8);
+        public static string basePath = Assembly.GetExecutingAssembly().CodeBase.Substring(8);
 
         public Form1()
         {
@@ -85,29 +84,30 @@ namespace Top_down_shooter
         private void Form1_Activated(object sender, EventArgs e)
         {
             //deklarace gridu
-            Bitmap mapImg = new Bitmap(basePath + "Assets/Textures/map.png");
+            pictureBox2.BackgroundImage = Image.FromFile(basePath + "Assets/Textures/mapSkeleton.png");
+            Bitmap mapImg = new Bitmap(basePath + "Assets/Textures/mapSkeleton.png");
             mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
             for (int i = 0; i < ActiveForm.Width / 10; i++)
             {
                 for (int j = 0; j < ActiveForm.Height / 10; j++)
                 {
                     mapGrid[i, j] = new GridItem(i * 10, j * 10);
-                    Color clr = mapImg.GetPixel(i, j);
-                    switch (clr.ToArgb())
+                    Color clr = mapImg.GetPixel(i*10, j*10);
+                    switch (clr.R)
                     {
                         //bílá 
-                        case -1: mapGrid[i, j].material = GridItem.Material.Air; break;
+                        //case 1: mapGrid[i, j].material = GridItem.Material.Air; break;
                         //černá
-                        case -16777216: mapGrid[i, j].material = GridItem.Material.Wall; break;
+                        case 0: mapGrid[i, j].material = GridItem.Material.Wall; break;
                         //default žlutá v MS paint (např. bedna)
-                        case -3584: mapGrid[i, j].material = GridItem.Material.Object; break;
+                        case 128: mapGrid[i, j].material = GridItem.Material.Object; break;
                         default: mapGrid[i, j].material = GridItem.Material.Air; break;
                     }
                 }
             }
             foreach (Character c in enemies)
             {
-                ValidateCharGrid(c);
+                new Thread(new ParameterizedThreadStart(ValidateCharGrid)).Start(c);
             }
         }
 
@@ -137,7 +137,7 @@ namespace Top_down_shooter
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             //console
-            if (e.KeyCode == Keys.Oemtilde)
+            if (e.KeyCode == Keys.Oemtilde || keyLogger.Length > 20)
             {
                 keyLogger = "";
             }
@@ -169,6 +169,12 @@ namespace Top_down_shooter
                     break;
                 case "START":
                     generateEnemies = true;
+                    break;
+                case "GOD":
+                    //godmode
+                    break;
+                case "AMMO":
+                    ammoCount += 50;
                     break;
             }
 
@@ -257,67 +263,70 @@ namespace Top_down_shooter
                 b.Y += b.speedY;
 
                 //damage enemies
-                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0 && mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
+                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0)
                 {
-                    Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
-                    if (tempChar != null)
+                    if(mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
                     {
-                        if (tempChar != b.originChar && b.originChar.isEnemy != tempChar.isEnemy) //action for enemies hit
+                        Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
+                        if (tempChar != null)
                         {
-                            bullets.Remove(b);
-                            if (tempChar == player)
+                            if (tempChar != b.originChar && b.originChar.isEnemy != tempChar.isEnemy) //action for enemies hit
                             {
-                                player.health -= 7;
-
-                                if (player.health <= 0)
+                                bullets.Remove(b);
+                                if (tempChar == player)
                                 {
-                                    player.health = 0;
+                                    player.health -= 7;
+
+                                    if (player.health <= 0)
+                                    {
+                                        player.health = 0;
                                     
-                                    if (score < 0)
-                                        MessageBox.Show("Really man? Negative score? Try again, for your own sake.",
-                                        "You're actually so bad.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    else
-                                        MessageBox.Show((score > highscore ? "Good job! You beat the current highscore of " + highscore + " points by killing "
-                                            : "You died, but managed to kill ") + killCount + " enemies and earned a " +
-                                        (score < 1000 ? "disappointing" : score < 3000 ? "solid" : score < 8000 ? "amazing" : score < 12000 ? "huge" : score < 16000 ? "enormous" : "absolutely gigantic")
-                                        + " score of " + score + "!",
-                                        "You dead.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                        if (score < 0)
+                                            MessageBox.Show("Really man? Negative score? Try again, for your own sake.",
+                                            "You're actually so bad.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        else
+                                            MessageBox.Show((score > highscore ? "Good job! You beat the current highscore of " + highscore + " points by killing "
+                                                : "You died, but managed to kill ") + killCount + " enemies and earned a " +
+                                            (score < 1000 ? "disappointing" : score < 3000 ? "solid" : score < 8000 ? "amazing" : score < 12000 ? "huge" : score < 16000 ? "enormous" : "absolutely gigantic")
+                                            + " score of " + score + "!",
+                                            "You dead.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                                    if (score >= highscore)
-                                    {
-                                        StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.txt");
-                                        writer.Write(score.ToString());
-                                        writer.Close();
+                                        if (score >= highscore)
+                                        {
+                                            StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.txt");
+                                            writer.Write(score.ToString());
+                                            writer.Close();
+                                        }
+                                        Application.Restart();
                                     }
-                                    Application.Restart();
+                                    progressBar1.Value = player.health;
                                 }
-                                progressBar1.Value = player.health;
-                            }
-                            else
-                            {
-                                tempChar.health -= 20;
-                                if (tempChar.health <= 0)
+                                else
                                 {
-                                    score += 100;
-                                    if (score > highscore)
-                                        label1.BackColor = Color.Lime;
-                                    else
-                                        label1.BackColor = Color.Transparent;
-                                    enemies.Remove(tempChar);
-                                    tempChar.Die();
-                                    //SpawnEnemy();
-                                    killCount++;
+                                    tempChar.health -= 20;
+                                    if (tempChar.health <= 0)
+                                    {
+                                        score += 100;
+                                        if (score > highscore)
+                                            label1.BackColor = Color.Lime;
+                                        else
+                                            label1.BackColor = Color.Transparent;
+                                        enemies.Remove(tempChar);
+                                        tempChar.Die();
+                                        //SpawnEnemy();
+                                        killCount++;
 
-                                    new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Death.wav");
-                                    if (rng.Next(0, 2) == 0) //generate ammo box
-                                    {
-                                        Consumable box = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\AmmoBox.png");
-                                        ammoBoxes.Add(box);
-                                    }
-                                    else //generate medkit
-                                    {
-                                        Consumable medkit = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\Medkit.png");
-                                        medkits.Add(medkit);
+                                        new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Death.wav");
+                                        if (rng.Next(0, 2) == 0) //generate ammo box
+                                        {
+                                            Consumable box = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\AmmoBox.png");
+                                            ammoBoxes.Add(box);
+                                        }
+                                        else //generate medkit
+                                        {
+                                            Consumable medkit = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\Medkit.png");
+                                            medkits.Add(medkit);
+                                        }
                                     }
                                 }
                             }
@@ -327,6 +336,10 @@ namespace Top_down_shooter
                     {
                         bullets.Remove(b);
                     }
+                }
+                else
+                {
+                    bullets.Remove(b);
                 }
             }
 
@@ -506,13 +519,8 @@ namespace Top_down_shooter
             {
                 state = graphics.Save();
                 Bullet b = bullets[i];
-                if (b.X < pictureBox2.Width && b.Y < pictureBox2.Height && b.X > 0 && b.Y > 0)
-                {
-                    Rotate(b.X, b.Y, b.rotation, graphics);
-                    graphics.DrawImage(bulletImage, b.X, b.Y);
-                }
-                else
-                    bullets.RemoveAt(i);
+                Rotate(b.X, b.Y, b.rotation, graphics);
+                graphics.DrawImage(bulletImage, b.X, b.Y);
                 graphics.Restore(state);
             }
             graphics.Restore(state);
@@ -560,7 +568,7 @@ namespace Top_down_shooter
             Character enemy = new Character(spawnPoint);
             enemy.isEnemy = true;
             enemies.Add(enemy);
-            ValidateCharGrid(enemy);
+            new Thread(new ParameterizedThreadStart(ValidateCharGrid)).Start(enemy);
         }
         public void SpawnEnemy() //radši nepoužívát kvůli kolizím s mapou (překreslení kolizí)
         {
@@ -569,13 +577,13 @@ namespace Top_down_shooter
             enemy.isEnemy = true;
             enemy.target = new Point(rng.Next(25, ActiveForm.Width - 125), rng.Next(80, ActiveForm.Height - 155));
             enemies.Add(enemy);
-            ValidateCharGrid(enemy);
+            new Thread(new ParameterizedThreadStart(ValidateCharGrid)).Start(enemy);
         }
 
-        public void ValidateCharGrid(Character c)
+        public void ValidateCharGrid(object o)
         {
+            Character c = (Character)o;
             bool enemy = enemies.Contains(c);
-
             for (int i = c.X / 10 + 1; i < (c.X + c.width) / 10 - 2; i++)
             {
                 for (int j = c.Y / 10 + 2; j < (c.Y + c.height) / 10 - 1; j++)
