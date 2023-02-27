@@ -19,5 +19,11 @@ namespace Top_down_shooter
             Y = posY;
             texturePath = path;
         }
+        public Consumable(Point pos, string path)
+        {
+            X = pos.X;
+            Y = pos.Y;
+            texturePath = path;
+        }
     }
 }

@@ -37,8 +37,8 @@ namespace Top_down_shooter
             mapGrid = Form1.mapGrid;
 
             collisionRight = X + posX + width > Form1.ActiveForm.Width - 15;
-            collisionLeft = X + posX < 15;
-            collisionUp = Y + posY < 50;
+            collisionLeft = X + posX < 0;
+            collisionUp = Y + posY < 65;
             collisionDown = Y + posY + height > Form1.ActiveForm.Height - 45;
 
             //can check for gridItem movement for optimalization
@@ -62,7 +62,7 @@ namespace Top_down_shooter
                 X += posX;
                 for (int i = Y / 10 + 1; i < Y / 10 + 10; i++)
                 {
-                    if (mapGrid[X / 10, i].material != GridItem.Material.Air)
+                    if (mapGrid[X / 10+1, i].material != GridItem.Material.Air)
                     {
                         X -= posX;
                         collisionLeft = true;
@@ -73,7 +73,7 @@ namespace Top_down_shooter
             if (posY > 0 && !collisionDown) //pohyb dolů
             {
                 Y += posY;
-                for (int i = X / 10; i < X / 10 + 9; i++)
+                for (int i = X / 10+1; i < X / 10 + 9; i++)
                 {
                     if (mapGrid[i, Y / 10 + 9].material != GridItem.Material.Air)
                     {
@@ -86,7 +86,7 @@ namespace Top_down_shooter
             else if (posY < 0 && !collisionUp) //pohyb nahoru
             {
                 Y += posY;
-                for (int i = X / 10; i < X / 10 + 9; i++)
+                for (int i = X / 10+1; i < X / 10 + 9; i++)
                 {
                     if (mapGrid[i, Y / 10 + 1].material != GridItem.Material.Air)
                     {
@@ -109,13 +109,13 @@ namespace Top_down_shooter
             {
                 for (int i = Y / 10 + 1; i < Y / 10 + 10; i++)
                 {
-                    mapGrid[X / 10, i].material = GridItem.Material.Air;
-                    mapGrid[X / 10, i].charOnGrid = null;
+                    mapGrid[X / 10+1, i].material = GridItem.Material.Air;
+                    mapGrid[X / 10+1, i].charOnGrid = null;
                 }
             }
             if (!collisionUp)
             {
-                for (int i = X / 10; i < X / 10 + 9; i++)
+                for (int i = X / 10+1; i < X / 10 + 9; i++)
                 {
                     mapGrid[i, Y / 10 + 1].material = GridItem.Material.Air;
                     mapGrid[i, Y / 10 + 1].charOnGrid = null;
@@ -123,7 +123,7 @@ namespace Top_down_shooter
             }
             if (!collisionDown)
             {
-                for (int i = X / 10; i < X / 10 + 9; i++)
+                for (int i = X / 10+1; i < X / 10 + 9; i++)
                 {
                     mapGrid[i, Y / 10 + 9].material = GridItem.Material.Air;
                     mapGrid[i, Y / 10 + 9].charOnGrid = null;
@@ -131,7 +131,7 @@ namespace Top_down_shooter
             }
             
             //create new position
-            for (int i = X / 10 + 1; i < X / 10 + 8; i++)
+            for (int i = X / 10 + 2; i < X / 10 + 8; i++)
             {
                 for (int j = Y / 10 + 2; j < Y / 10 + 9; j++)
                 {
@@ -139,14 +139,9 @@ namespace Top_down_shooter
                     mapGrid[i, j].charOnGrid = this;
                 }
             }
-
+            if ((X == position.X && Y == position.Y))
+                target = Form1.spawnPoints[new Random().Next(0, Form1.spawnPoints.Count())];
             position = new Point(X, Y);
-        }
-
-        //vykreslení
-        public void Draw()
-        {
-
         }
 
         //ostatní

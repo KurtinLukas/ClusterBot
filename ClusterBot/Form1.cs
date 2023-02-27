@@ -41,7 +41,9 @@ namespace Top_down_shooter
         int mouseX;
         int mouseY;
         int timer = 0;
-        bool generateEnemies = true;
+        public static Point[] spawnPoints = { new Point(110,95), new Point(300,90), new Point(30, 290), new Point(30, 530), 
+            new Point(110,440), new Point(140,670), new Point(30,830), new Point(270,840), new Point(320,300), 
+            new Point(850,840), new Point(500,840), new Point(600,600), new Point(520,200) };
 
         int score = 0;
         int highscore;
@@ -50,11 +52,13 @@ namespace Top_down_shooter
 
         private string keyLogger = "";
         private bool debugMode = false;
+        private bool generateEnemies = true;
+        private bool godMode = false;
 
+        //statické vlastnosti
         static Character player;
         public static GridItem[,] mapGrid;
         public static List<Character> enemies = new List<Character>();
-
         public static string basePath = Assembly.GetExecutingAssembly().CodeBase.Substring(8);
 
         public Form1()
@@ -74,7 +78,7 @@ namespace Top_down_shooter
             this.KeyPreview = true;
             menu = new Menu(this, timer1, basePath);
 
-            player = new Character(400, 400);
+            player = new Character(spawnPoints[rng.Next(0, spawnPoints.Count())]);
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
@@ -89,6 +93,7 @@ namespace Top_down_shooter
 
         private void Form1_Activated(object sender, EventArgs e)
         {
+            if (ActiveForm == null) return; //při restartu formy vyskočila nullReferenceException na řádku definice mapGridu
             //deklarace gridu
             pictureBox2.BackgroundImage = Image.FromFile(basePath + "Assets/Textures/mapSkeleton.png");
             Bitmap mapImg = new Bitmap(basePath + "Assets/Textures/mapSkeleton.png");
@@ -101,11 +106,7 @@ namespace Top_down_shooter
                     Color clr = mapImg.GetPixel(i*10, j*10);
                     switch (clr.R)
                     {
-                        //bílá 
-                        //case 1: mapGrid[i, j].material = GridItem.Material.Air; break;
-                        //černá
                         case 0: mapGrid[i, j].material = GridItem.Material.Wall; break;
-                        //default žlutá v MS paint (např. bedna)
                         case 128: mapGrid[i, j].material = GridItem.Material.Object; break;
                         default: mapGrid[i, j].material = GridItem.Material.Air; break;
                     }
@@ -177,7 +178,7 @@ namespace Top_down_shooter
                     generateEnemies = true;
                     break;
                 case "GOD":
-                    //godmode
+                    godMode = true;
                     break;
                 case "AMMO":
                     ammoCount += 50;
@@ -282,7 +283,8 @@ namespace Top_down_shooter
                                 bullets.Remove(b);
                                 if (tempChar == player)
                                 {
-                                    player.health -= 7;
+                                    if(!godMode)
+                                        player.health -= 7;
 
                                     if (player.health <= 0)
                                     {
@@ -320,7 +322,8 @@ namespace Top_down_shooter
                                             label1.BackColor = Color.Transparent;
                                         enemies.Remove(tempChar);
                                         tempChar.Die();
-                                        //SpawnEnemy();
+                                        if (enemies.Count == 0)
+                                            SpawnEnemy();
                                         killCount++;
 
                                         new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Death.wav");
@@ -372,6 +375,7 @@ namespace Top_down_shooter
                         lbl.BringToFront();
                         labels.Add(lbl);
                         ticks.Add(30);
+                        label2.BackColor = Color.Transparent;
                         new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Reload.wav");
                     }
                 }
@@ -419,27 +423,28 @@ namespace Top_down_shooter
             }
             // Player angle
             player.angle = CalcAngle(player, mouseX, mouseY);
-
             if (generateEnemies && timer % 200 == 0) //2s timer
             {
-                //za každých 7.5s se spawne +1 enemy
-                for (int i = 0; i < timer / (750 * i + 1); i++)
+                //za každých 10s se spawne +1 enemy
+                for (int i = 0; i < timer / (1000 * i + 1); i++)
                     SpawnEnemy();
             }
             if (timer % 700 == 0) //7s timer
             {
                 if (rng.Next(0, 2) == 0)
                 {
-                    ammoBoxes.Add(new Consumable(rng.Next(25, ActiveForm.Width - 125), rng.Next(80, ActiveForm.Height - 155), basePath + @"Assets\Textures\AmmoBox.png"));
+                    ammoBoxes.Add(new Consumable(spawnPoints[rng.Next(0,spawnPoints.Count())], basePath + @"Assets\Textures\AmmoBox.png"));
                 }
                 else
                 {
-                    medkits.Add(new Consumable(rng.Next(25, ActiveForm.Width - 125), rng.Next(80, ActiveForm.Height - 155), basePath + @"Assets\Textures\Medkit.png"));
+                    medkits.Add(new Consumable(spawnPoints[rng.Next(0, spawnPoints.Count())], basePath + @"Assets\Textures\Medkit.png"));
                 }
             }
+
             // Enemy handler
             foreach (Character enemy in enemies)
             {
+                
                 enemy.angle = CalcAngle(enemy, player.centerX, player.centerY);
                 if (rng.Next(1, 100) == 1)
                     ShootBullet(enemy);
@@ -450,9 +455,12 @@ namespace Top_down_shooter
                     enemy.target.Y = enemy.Y;
 
                 if (enemy.position == enemy.target)//nový cíl pokud ke stávajícímu dojde
-                    enemy.target = new Point(rng.Next(25, ActiveForm.Width - 125), rng.Next(80, ActiveForm.Height - 155));
+                {
+                    enemy.target = spawnPoints[rng.Next(0,spawnPoints.Count())];
+                }
                 //pohyb k cíli
-                enemy.MoveBy(enemy.X > enemy.target.X ? -3 : enemy.target.X == enemy.X ? 0 : 3, enemy.Y > enemy.target.Y ? -3 : enemy.target.Y == enemy.Y ? 0 : 3);
+                enemy.MoveBy(enemy.X > enemy.target.X ? -3 : enemy.target.X == enemy.X ? 0 : 3, 
+                            enemy.Y > enemy.target.Y ? -3 : enemy.target.Y == enemy.Y ? 0 : 3);
             }
 
             label1.Text = "Score: " + score;
@@ -564,6 +572,7 @@ namespace Top_down_shooter
                 state = graphics.Save();
                 Rotate(enemy.centerX, enemy.centerY, enemy.angle, graphics);
                 graphics.DrawImage(enemyImage, enemy.X, enemy.Y);
+
                 graphics.Restore(state);
                 Color color;
                 if (enemy.health <= 40)
@@ -571,6 +580,8 @@ namespace Top_down_shooter
                 else
                     color = Color.Lime;
                 graphics.DrawRectangle(new Pen(color, 5), enemy.X + 10, enemy.Y + 120, (int)(0.7 * enemy.health), 5);
+
+                graphics.DrawLine(new Pen(Brushes.Red, 2), enemy.position, enemy.target);
             }
             graphics.Restore(state);
             if (debugMode)
@@ -603,12 +614,16 @@ namespace Top_down_shooter
             enemies.Add(enemy);
             new Thread(new ParameterizedThreadStart(ValidateCharGrid)).Start(enemy);
         }
-        public void SpawnEnemy() //radši nepoužívát kvůli kolizím s mapou (překreslení kolizí)
+
+        /// <summary>
+        /// Spawn an enemy at a random spawn point position
+        /// </summary>
+        public void SpawnEnemy()
         {
             Thread.Sleep(1);
-            Character enemy = new Character(rng.Next(25, ActiveForm.Width - 125), rng.Next(60, ActiveForm.Height - 155));
+            Character enemy = new Character(spawnPoints[rng.Next(0, spawnPoints.Count())]);
             enemy.isEnemy = true;
-            enemy.target = new Point(rng.Next(25, ActiveForm.Width - 125), rng.Next(80, ActiveForm.Height - 155));
+            enemy.target = spawnPoints[rng.Next(0, spawnPoints.Count())];
             enemies.Add(enemy);
             new Thread(new ParameterizedThreadStart(ValidateCharGrid)).Start(enemy);
         }
