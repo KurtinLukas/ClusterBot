@@ -204,6 +204,11 @@ namespace Top_down_shooter
                     score -= 3;
                     ammoCount--;
                     ShootBullet(player);
+                    
+                    if (ammoCount == 0)
+                        label2.BackColor = Color.Red;
+                    else
+                        label2.BackColor = Color.Transparent;
                 }
             }
         }
@@ -251,7 +256,6 @@ namespace Top_down_shooter
                 b.X += b.speedX;
                 b.Y += b.speedY;
 
-                if (b.X > 1915 || b.Y > 1045) continue;
                 //damage enemies
                 if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0 && mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
                 {
@@ -275,8 +279,8 @@ namespace Top_down_shooter
                                     else
                                         MessageBox.Show((score > highscore ? "Good job! You beat the current highscore of " + highscore + " points by killing "
                                             : "You died, but managed to kill ") + killCount + " enemies and earned a " +
-                                        (score < 1000 ? "disappointing" : score < 3000 ? "solid" : score < 8000 ? "amazing" : "tremendous")
-                                        + " score of " + score,
+                                        (score < 1000 ? "disappointing" : score < 3000 ? "solid" : score < 8000 ? "amazing" : score < 12000 ? "huge" : score < 16000 ? "enormous" : "absolutely gigantic")
+                                        + " score of " + score + "!",
                                         "You dead.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                                     if (score >= highscore)
@@ -292,25 +296,29 @@ namespace Top_down_shooter
                             else
                             {
                                 tempChar.health -= 20;
-                            }
-                            if (tempChar.health <= 0)
-                            {
-                                score += 100;
-                                enemies.Remove(tempChar);
-                                tempChar.Die();
-                                //SpawnEnemy();
-                                killCount++;
+                                if (tempChar.health <= 0)
+                                {
+                                    score += 100;
+                                    if (score > highscore)
+                                        label1.BackColor = Color.Lime;
+                                    else
+                                        label1.BackColor = Color.Transparent;
+                                    enemies.Remove(tempChar);
+                                    tempChar.Die();
+                                    //SpawnEnemy();
+                                    killCount++;
 
-                                new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Death.wav");
-                                if (rng.Next(0, 2) == 0) //generate ammo box
-                                {
-                                    Consumable box = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\AmmoBox.png");
-                                    ammoBoxes.Add(box);
-                                }
-                                else //generate medkit
-                                {
-                                    Consumable medkit = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\Medkit.png");
-                                    medkits.Add(medkit);
+                                    new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Death.wav");
+                                    if (rng.Next(0, 2) == 0) //generate ammo box
+                                    {
+                                        Consumable box = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\AmmoBox.png");
+                                        ammoBoxes.Add(box);
+                                    }
+                                    else //generate medkit
+                                    {
+                                        Consumable medkit = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\Medkit.png");
+                                        medkits.Add(medkit);
+                                    }
                                 }
                             }
                         }
@@ -321,18 +329,6 @@ namespace Top_down_shooter
                     }
                 }
             }
-
-            if (score > highscore)
-                label1.BackColor = Color.Lime;
-            else
-                label1.BackColor = Color.Transparent;
-
-
-            // Ammo pickup
-            if (ammoCount == 0)
-                label2.BackColor = Color.Red;
-            else
-                label2.BackColor = Color.Transparent;
 
             for (int i = 0; i < ammoBoxes.Count; i++)
             {
@@ -404,13 +400,13 @@ namespace Top_down_shooter
             // Player angle
             player.angle = CalcAngle(player, mouseX, mouseY);
 
-
-            if (generateEnemies && timer % 200 == 0)
+            if (generateEnemies && timer % 200 == 0) //2s timer
             {
-                for (int i = 0; i < timer / (1500 * i * 0.5); i++)
+                //za každých 7.5s se spawne +1 enemy
+                for (int i = 0; i < timer / (750 * i + 1); i++)
                     SpawnEnemy();
             }
-            if (timer % 500 == 0)
+            if (timer % 700 == 0) //7s timer
             {
                 if (rng.Next(0, 2) == 0)
                 {
@@ -499,7 +495,7 @@ namespace Top_down_shooter
             Image bulletImage = Image.FromFile(basePath + "Assets/Textures/Bullet.png");
             Image enemyImage = Image.FromFile(basePath + "Assets/Textures/EnemyIcon.png");
 
-            // Draw ammo boxes
+            // Draw ammo boxes & medkits
             foreach (Consumable box in ammoBoxes)
                 graphics.DrawImage(Image.FromFile(box.texturePath), box.X, box.Y);
             foreach (Consumable med in medkits)
@@ -566,7 +562,7 @@ namespace Top_down_shooter
             enemies.Add(enemy);
             ValidateCharGrid(enemy);
         }
-        public void SpawnEnemy()
+        public void SpawnEnemy() //radši nepoužívát kvůli kolizím s mapou (překreslení kolizí)
         {
             Thread.Sleep(1);
             Character enemy = new Character(rng.Next(25, ActiveForm.Width - 125), rng.Next(60, ActiveForm.Height - 155));
