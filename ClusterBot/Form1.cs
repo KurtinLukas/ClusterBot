@@ -13,6 +13,11 @@ using System.Drawing.Drawing2D;
 using System.Media;
 using System.IO;
 
+using System.Security;
+using System.Security.Cryptography;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+
 namespace Top_down_shooter
 {
     public partial class Form1 : Form
@@ -74,7 +79,8 @@ namespace Top_down_shooter
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
-            highscore = int.Parse(System.IO.File.ReadAllText(basePath + @"Save\Highscore.txt"));
+            //highscore = int.Parse(System.IO.File.ReadAllText(basePath + @"Save\Highscore.txt"));
+            highscore = 0;
             label4.Text = "Highscore: " + highscore;
             //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
             IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
@@ -180,6 +186,7 @@ namespace Top_down_shooter
                 case Keys.S: down = true; break;
                 case Keys.M: SpawnEnemy(); break;
                 case Keys.Escape: menu.Show(); break;
+                case Keys.Space: Encrypt(basePath + @"\Save\Highscore.xyz"); break;
             }
 
         }
@@ -460,7 +467,7 @@ namespace Top_down_shooter
             calcAngle *= 180 / Math.PI;
             if (character.centerY < y)
                 calcAngle = 360 - calcAngle;
-            return calcAngle - 90 - 1/(prepona / 2000);
+            return calcAngle - 90 - 2000 / prepona;
         }
 
         public void ShootBullet(Character character)
@@ -484,6 +491,32 @@ namespace Top_down_shooter
         public static void PlaySound(object path)
         {
             new SoundPlayer((string)path).Play();
+        }
+
+
+        public void Encrypt(string path)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.ShowDialog();
+
+            string password = @"crypt123";
+            UnicodeEncoding UE = new UnicodeEncoding();
+            byte[] key = UE.GetBytes(password);
+
+            string cryptfile = path;
+            FileStream fsCrypt = new FileStream(cryptfile, FileMode.Create);
+
+            RijndaelManaged RMCrypto = new RijndaelManaged();
+            CryptoStream cs = new CryptoStream(fsCrypt, RMCrypto.CreateEncryptor(key, key), CryptoStreamMode.Write);
+
+            FileStream fsIn = new FileStream(ofd.FileName, FileMode.Open);
+
+            int data;
+            while ((data = fsIn.ReadByte()) != -1)
+                cs.WriteByte((byte)data);
+            fsIn.Close();
+            cs.Close();
+            fsCrypt.Close();
         }
 
         private void game_graphics(object sender, PaintEventArgs e)
