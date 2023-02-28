@@ -82,9 +82,10 @@ namespace Top_down_shooter
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
-            //highscore = int.Parse(System.IO.File.ReadAllText(basePath + @"Save\Highscore.txt"));
-            highscore = 0;
+            /*Decrypt(basePath + @"\Save\Highscore.xyz");
+            highscore = int.Parse(File.ReadAllText(basePath + @"Save\Highscore.txt"));
             label4.Text = "Highscore: " + highscore;
+            File.Delete(basePath + @"Save\Highscore.txt");*/
             //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
             IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
             Cursor = new Cursor(cursor);
@@ -193,7 +194,6 @@ namespace Top_down_shooter
                 case Keys.S: down = true; break;
                 case Keys.M: SpawnEnemy(); break;
                 case Keys.Escape: menu.Show(); break;
-                case Keys.Space: Encrypt(basePath + @"\Save\Highscore.xyz"); break;
             }
 
         }
@@ -302,8 +302,11 @@ namespace Top_down_shooter
 
                                         if (score >= highscore)
                                         {
+                                            
                                             StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.txt");
                                             writer.Write(score.ToString());
+                                            Encrypt(basePath + @"Save\Highscore.txt");
+                                            File.Delete(basePath + @"Save\Highscore.txt");
                                             writer.Close();
                                         }
                                         Application.Restart();
@@ -513,9 +516,6 @@ namespace Top_down_shooter
 
         public void Encrypt(string path)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.ShowDialog();
-
             string password = @"crypt123";
             UnicodeEncoding UE = new UnicodeEncoding();
             byte[] key = UE.GetBytes(password);
@@ -526,7 +526,7 @@ namespace Top_down_shooter
             RijndaelManaged RMCrypto = new RijndaelManaged();
             CryptoStream cs = new CryptoStream(fsCrypt, RMCrypto.CreateEncryptor(key, key), CryptoStreamMode.Write);
 
-            FileStream fsIn = new FileStream(ofd.FileName, FileMode.Open);
+            FileStream fsIn = new FileStream(basePath + @"\Save\Highscore.txt", FileMode.Open);
 
             int data;
             while ((data = fsIn.ReadByte()) != -1)
@@ -535,6 +535,28 @@ namespace Top_down_shooter
             cs.Close();
             fsCrypt.Close();
         }
+        public void Decrypt(string path)
+        {
+            string password = @"crypt123";
+
+            UnicodeEncoding UE = new UnicodeEncoding();
+            byte[] key = UE.GetBytes(password);
+
+            FileStream fsCrypt = new FileStream(path, FileMode.Open);
+
+            RijndaelManaged RMCrypto = new RijndaelManaged();
+            CryptoStream cs = new CryptoStream(fsCrypt, RMCrypto.CreateEncryptor(key, key), CryptoStreamMode.Read);
+
+            FileStream fsOut = new FileStream(basePath + @"\Save\Highscore.txt", FileMode.Create);
+
+            int data;
+            while ((data = cs.ReadByte()) != -1)
+                fsOut.WriteByte((byte)data);
+            fsOut.Close();
+            cs.Close();
+            fsCrypt.Close();
+        }
+
 
         private void game_graphics(object sender, PaintEventArgs e)
         {
