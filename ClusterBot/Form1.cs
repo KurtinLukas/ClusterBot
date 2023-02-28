@@ -49,6 +49,7 @@ namespace Top_down_shooter
         int highscore;
         int killCount = 0;
         int ammoCount = 50;
+        string hash = "f0xle@rn";
 
         private string keyLogger = "";
         private bool debugMode = false;
@@ -82,10 +83,21 @@ namespace Top_down_shooter
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
-            /*Decrypt(basePath + @"\Save\Highscore.xyz");
-            highscore = int.Parse(File.ReadAllText(basePath + @"Save\Highscore.txt"));
+            
+            byte[] data = Convert.FromBase64String(File.ReadAllText(basePath + @"Save\Highscore.txt"));
+            using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+            {
+                byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));//Get hash key
+                //Decrypt data by hash key
+                using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
+                {
+                    ICryptoTransform transform = tripDes.CreateDecryptor();
+                    byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
+                    highscore = int.Parse(UTF8Encoding.UTF8.GetString(results)); 
+                }
+            }
             label4.Text = "Highscore: " + highscore;
-            File.Delete(basePath + @"Save\Highscore.txt");*/
+
             //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
             IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
             Cursor = new Cursor(cursor);
@@ -302,12 +314,21 @@ namespace Top_down_shooter
 
                                         if (score >= highscore)
                                         {
-                                            
                                             StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.txt");
                                             writer.Write(score.ToString());
-                                            Encrypt(basePath + @"Save\Highscore.txt");
-                                            File.Delete(basePath + @"Save\Highscore.txt");
                                             writer.Close();
+                                            byte[] data = UTF8Encoding.UTF8.GetBytes(File.ReadAllText(basePath + @"Save\Highscore.txt"));
+                                            using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+                                            {
+                                                byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));//Get hash key
+                                                                                                                //Encrypt data by hash key
+                                                using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
+                                                {
+                                                    ICryptoTransform transform = tripDes.CreateEncryptor();
+                                                    byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
+                                                    File.WriteAllText(basePath + @"Save\Highscore.txt", Convert.ToBase64String(results, 0, results.Length));
+                                                }
+                                            }
                                         }
                                         Application.Restart();
                                     }
@@ -513,10 +534,10 @@ namespace Top_down_shooter
             new SoundPlayer((string)path).Play();
         }
 
-
+        
         public void Encrypt(string path)
         {
-            string password = @"crypt123";
+            /*string password = @"crypt123";
             UnicodeEncoding UE = new UnicodeEncoding();
             byte[] key = UE.GetBytes(password);
 
@@ -533,7 +554,8 @@ namespace Top_down_shooter
                 cs.WriteByte((byte)data);
             fsIn.Close();
             cs.Close();
-            fsCrypt.Close();
+            fsCrypt.Close();*/
+            
         }
         public void Decrypt(string path)
         {
