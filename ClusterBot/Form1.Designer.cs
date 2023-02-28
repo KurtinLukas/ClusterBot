@@ -38,6 +38,7 @@ namespace Top_down_shooter
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.TickTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
@@ -83,7 +84,7 @@ namespace Top_down_shooter
             this.pictureBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.BackgroundImage")));
             this.pictureBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox2.Location = new System.Drawing.Point(-1, -1);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(1000, 1000);
             this.pictureBox2.TabIndex = 5;
@@ -115,6 +116,12 @@ namespace Top_down_shooter
             this.label4.Size = new System.Drawing.Size(147, 25);
             this.label4.TabIndex = 6;
             this.label4.Text = "Highscore: 0";
+            // 
+            // TickTimer
+            // 
+            this.TickTimer.Enabled = true;
+            this.TickTimer.Interval = 10;
+            this.TickTimer.Tick += new System.EventHandler(this.TickTimer_Tick);
             // 
             // Form1
             // 
@@ -153,6 +160,7 @@ namespace Top_down_shooter
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Timer TickTimer;
     }
 }
 

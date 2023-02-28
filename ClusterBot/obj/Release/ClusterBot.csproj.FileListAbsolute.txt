@@ -7,3 +7,4 @@ E:\GitHub\ClusterBot\ClusterBot\bin\Release\ClusterBot.exe
 E:\GitHub\ClusterBot\ClusterBot\bin\Release\ClusterBot.pdb
 E:\GitHub\ClusterBot\ClusterBot\obj\Release\ClusterBot.exe
 E:\GitHub\ClusterBot\ClusterBot\obj\Release\ClusterBot.pdb
+E:\GitHub\ClusterBot\ClusterBot\obj\Release\ClusterBot.csproj.AssemblyReference.cache

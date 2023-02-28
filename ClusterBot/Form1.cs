@@ -40,11 +40,11 @@ namespace Top_down_shooter
         double diagonalSpeed;
         int mouseX;
         int mouseY;
-        int timer = 0;
+        int timer = 10;
         bool bulletCooldown = false;
         public static Point[] spawnPoints = { new Point(110,95), new Point(300,90), new Point(30, 290), new Point(30, 530),
             new Point(110,440), new Point(140,670), new Point(30,830), new Point(270,840), new Point(320,300),
-            new Point(850,840), new Point(500,840), new Point(600,600), new Point(520,200) };
+            new Point(850,840), new Point(500,840), new Point(600,600), new Point(520,200), new Point(850, 440) };
 
         int score = 0;
         int highscore;
@@ -57,10 +57,11 @@ namespace Top_down_shooter
         private bool generateEnemies = true;
         private bool godMode = false;
 
-        //statické vlastnosti
-        static Character player;
+        private System.Windows.Media.MediaPlayer bulletMP = new System.Windows.Media.MediaPlayer();
+        
+        Character player;
         public static GridItem[,] mapGrid;
-        public static List<Character> enemies = new List<Character>();
+        public List<Character> enemies = new List<Character>();
         public static string basePath = Assembly.GetExecutingAssembly().CodeBase.Substring(8);
 
         public Form1()
@@ -74,8 +75,9 @@ namespace Top_down_shooter
             //TopMost = true;
             //FormBorderStyle = FormBorderStyle.None;
             //WindowState = FormWindowState.Maximized;
-            int pathRemoveIndex = basePath.IndexOf("ClusterBot") + 10;
-            basePath = basePath.Remove(pathRemoveIndex) + "/";
+            basePath = basePath.Remove(basePath.LastIndexOf("ClusterBot.exe"));
+            
+            //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
 
             this.KeyPreview = true;
             menu = new Menu(this, timer1, basePath);
@@ -84,50 +86,67 @@ namespace Top_down_shooter
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
-
-            byte[] data = Convert.FromBase64String(File.ReadAllText(basePath + @"Save\Highscore.crpt"));
-            using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+            if (!File.Exists(basePath + @"Save\Highscore.crpt") || !File.Exists(basePath + @"Assets\Textures\mapSkeleton.png") || !File.Exists(basePath + @"Assets\SFX\Shoot.wav"))
             {
-                byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));
-                using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
-                {
-                    ICryptoTransform transform = tripDes.CreateDecryptor();
-                    byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
-                    highscore = int.Parse(UTF8Encoding.UTF8.GetString(results));
-                }
+                MessageBox.Show("Něco se pokazilo, prosím vraťte Vaše změny v souborech zpět nebo odzipujte hru znovu.");
+                Close();
+                return;
             }
+            try
+            {
+
+                byte[] data = Convert.FromBase64String(File.ReadAllText(basePath + @"Save\Highscore.crpt"));
+                using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+                {
+                    byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));
+                    using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
+                    {
+                        ICryptoTransform transform = tripDes.CreateDecryptor();
+                        byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
+                        highscore = int.Parse(UTF8Encoding.UTF8.GetString(results));
+                    }
+                }
+            
+
             label4.Text = "Highscore: " + highscore;
 
-            //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
             IntPtr cursor = LoadCursorFromFile(basePath + @"Assets\Textures\Cursor.cur");
             Cursor = new Cursor(cursor);
             CenterToScreen();
+            }
+            catch
+            {
+                MessageBox.Show("Něco se pokazilo, prosím vraťte Vaše změny v souborech zpět nebo odzipujte hru znovu, popřípadě kontaktujte vývojáře na e-mailu kurtinl.04@spst.eu .");
+                Application.Exit();
+            }
         }
-
         private void Form1_Activated(object sender, EventArgs e)
         {
             if (ActiveForm == null) return; //při restartu formy vyskočila nullReferenceException na řádku definice mapGridu
             //deklarace gridu
-            pictureBox2.BackgroundImage = Image.FromFile(basePath + "Assets/Textures/mapSkeleton.png");
-            Bitmap mapImg = new Bitmap(basePath + "Assets/Textures/mapSkeleton.png");
-            mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
-            for (int i = 0; i < ActiveForm.Width / 10; i++)
+            try
             {
-                for (int j = 0; j < ActiveForm.Height / 10; j++)
+                Bitmap mapImg = new Bitmap(basePath + "Assets/Textures/mapSkeleton.png");
+                mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
+                for (int i = 0; i < ActiveForm.Width / 10; i++)
                 {
-                    mapGrid[i, j] = new GridItem(i * 10, j * 10);
-                    Color clr = mapImg.GetPixel(i * 10, j * 10);
-                    switch (clr.R)
+                    for (int j = 0; j < ActiveForm.Height / 10; j++)
                     {
-                        case 0: mapGrid[i, j].material = GridItem.Material.Wall; break;
-                        case 128: mapGrid[i, j].material = GridItem.Material.Object; break;
-                        default: mapGrid[i, j].material = GridItem.Material.Air; break;
+                        mapGrid[i, j] = new GridItem(i * 10, j * 10);
+                        Color clr = mapImg.GetPixel(i * 10, j * 10);
+                        switch (clr.R)
+                        {
+                            case 0: mapGrid[i, j].material = GridItem.Material.Wall; break;
+                            case 128: mapGrid[i, j].material = GridItem.Material.Object; break;
+                            default: mapGrid[i, j].material = GridItem.Material.Air; break;
+                        }
                     }
                 }
             }
-            foreach (Character c in enemies)
+            catch
             {
-                new Thread(new ParameterizedThreadStart(ValidateCharGrid)).Start(c);
+                MessageBox.Show("Něco se pokazilo, prosím vraťte Vaše změny v souborech zpět nebo odzipujte hru znovu, popřípadě kontaktujte vývojáře na e-mailu kurtinl.04@spst.eu .");
+                Application.Exit();
             }
         }
 
@@ -191,7 +210,7 @@ namespace Top_down_shooter
                     generateEnemies = true;
                     break;
                 case "GOD":
-                    godMode = true;
+                    godMode = !godMode;
                     break;
                 case "AMMO":
                     ammoCount += 50;
@@ -204,7 +223,7 @@ namespace Top_down_shooter
                 case Keys.D: right = true; break;
                 case Keys.W: up = true; break;
                 case Keys.S: down = true; break;
-                case Keys.M: SpawnEnemy(); break;
+                //case Keys.M: SpawnEnemy(); break;
                 case Keys.Escape: menu.Show(); break;
             }
 
@@ -251,259 +270,266 @@ namespace Top_down_shooter
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            timer++;
-            if (ActiveForm == null) return; //pokud je forma minimalizovaná tak ActiveForm == null
-            // Movement & player grid calculation
-            if (left)
+            try
             {
-                moveVector.X = -speed;
-            }
-            if (right)
-            {
-                moveVector.X = speed;
-            }
-            if (up)
-            {
-                moveVector.Y = -speed;
-            }
-            if (down)
-            {
-                moveVector.Y = speed;
-            }
-
-            if ((left && up) || (left && down) || (right && up) || (right && down))
-                speed = (int)diagonalSpeed;
-            else
-                speed = 5;
-            player.MoveBy(moveVector.X, moveVector.Y);
-
-            // Bullet movement
-            for (int i = 0; i < bullets.Count; i++)
-            {
-                Bullet b = bullets[i];
-                b.X += b.speedX;
-                b.Y += b.speedY;
-
-                //damage enemies
-                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0)
+                if (ActiveForm == null) return; //pokud je forma minimalizovaná tak ActiveForm == null
+                                                // Movement & player grid calculation
+                if (left)
                 {
-                    if (mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
+                    moveVector.X = -speed;
+                }
+                if (right)
+                {
+                    moveVector.X = speed;
+                }
+                if (up)
+                {
+                    moveVector.Y = -speed;
+                }
+                if (down)
+                {
+                    moveVector.Y = speed;
+                }
+
+                if ((left && up) || (left && down) || (right && up) || (right && down))
+                    speed = (int)diagonalSpeed;
+                else
+                    speed = 5;
+                player.MoveBy(new Point(moveVector.X, moveVector.Y));
+
+                // Bullet movement
+                for (int i = 0; i < bullets.Count; i++)
+                {
+                    Bullet b = bullets[i];
+                    b.X += b.speedX;
+                    b.Y += b.speedY;
+
+                    //damage enemies
+                    if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0)
                     {
-                        Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
-                        if (tempChar != null)
+                        if (mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
                         {
-                            if (tempChar != b.originChar && b.originChar.isEnemy != tempChar.isEnemy) //action for enemies hit
+                            Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
+                            if (tempChar != null)
                             {
-                                bullets.Remove(b);
-                                if (tempChar == player)
+                                if (tempChar != b.originChar && b.originChar.isEnemy != tempChar.isEnemy) //action for enemies hit
                                 {
-                                    if (!godMode)
-                                        player.health -= 7;
-
-                                    if (player.health <= 0)
+                                    bullets.Remove(b);
+                                    if (tempChar == player)
                                     {
-                                        player.health = 0;
+                                        if (!godMode)
+                                            player.health -= 7;
 
-                                        if (score < 0)
-                                            MessageBox.Show("Really man? Negative score? Try again, for your own sake.",
-                                            "You're actually so bad.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        else
-                                            MessageBox.Show((score > highscore ? "Good job! You beat the current highscore of " + highscore + " points by killing "
-                                                : "You died, but managed to kill ") + killCount + " enemies and earned a " +
-                                            (score < 1000 ? "disappointing" : score < 3000 ? "solid" : score < 8000 ? "amazing" : score < 12000 ? "huge" : score < 16000 ? "enormous" : "absolutely gigantic")
-                                            + " score of " + score + "!",
-                                            "You dead.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
-                                        if (score >= highscore)
+                                        if (player.health <= 0)
                                         {
-                                            StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.crpt");
-                                            writer.Write(score.ToString());
-                                            writer.Close();
-                                            byte[] data = UTF8Encoding.UTF8.GetBytes(File.ReadAllText(basePath + @"Save\Highscore.crpt"));
-                                            using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+                                            player.health = 0;
+
+                                            if (score < 0)
+                                                MessageBox.Show("Really man? Negative score? Try again, for your own sake.",
+                                                "You're actually so bad.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                            else
+                                                MessageBox.Show((score > highscore ? "Good job! You beat the current highscore of " + highscore + " points by killing "
+                                                    : "You died, but managed to kill ") + killCount + " enemies and earned a " +
+                                                (score < 1000 ? "disappointing" : score < 3000 ? "solid" : score < 8000 ? "amazing" : score < 12000 ? "huge" : score < 16000 ? "enormous" : "absolutely gigantic")
+                                                + " score of " + score + "!",
+                                                "You dead.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                                            if (score >= highscore)
                                             {
-                                                byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));
-                                                using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
+                                                StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.crpt");
+                                                writer.Write(score.ToString());
+                                                writer.Close();
+                                                byte[] data = UTF8Encoding.UTF8.GetBytes(File.ReadAllText(basePath + @"Save\Highscore.crpt"));
+                                                using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
                                                 {
-                                                    ICryptoTransform transform = tripDes.CreateEncryptor();
-                                                    byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
-                                                    File.WriteAllText(basePath + @"Save\Highscore.crpt", Convert.ToBase64String(results, 0, results.Length));
+                                                    byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));
+                                                    using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
+                                                    {
+                                                        ICryptoTransform transform = tripDes.CreateEncryptor();
+                                                        byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
+                                                        File.WriteAllText(basePath + @"Save\Highscore.crpt", Convert.ToBase64String(results, 0, results.Length));
+                                                    }
                                                 }
                                             }
+                                            Application.Restart();
                                         }
-                                        Application.Restart();
+                                        progressBar1.Value = player.health;
                                     }
-                                    progressBar1.Value = player.health;
-                                }
-                                else
-                                {
-                                    tempChar.health -= 20;
-                                    if (tempChar.health <= 0)
+                                    else
                                     {
-                                        score += 100;
-                                        if (score > highscore)
+                                        tempChar.health -= 20;
+                                        if (tempChar.health <= 0)
                                         {
-                                            label1.ForeColor = Color.Black;
-                                            label1.BackColor = Color.Lime;
-                                        }
-                                        else
-                                        {
-                                            label1.ForeColor = Color.White;
-                                            label1.BackColor = Color.Black;
-                                        }
-                                           
-                                        enemies.Remove(tempChar);
-                                        tempChar.Die();
-                                        if (enemies.Count == 0)
-                                            SpawnEnemy();
-                                        killCount++;
+                                            score += 100;
+                                            if (score > highscore)
+                                            {
+                                                label1.ForeColor = Color.Black;
+                                                label1.BackColor = Color.Lime;
+                                            }
+                                            else
+                                            {
+                                                label1.ForeColor = Color.White;
+                                                label1.BackColor = Color.Black;
+                                            }
 
-                                        new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Death.wav");
-                                        if (rng.Next(0, 2) == 0) //generate ammo box
-                                        {
-                                            Consumable box = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\AmmoBox.png");
-                                            ammoBoxes.Add(box);
-                                        }
-                                        else //generate medkit
-                                        {
-                                            Consumable medkit = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\Medkit.png");
-                                            medkits.Add(medkit);
+                                            enemies.Remove(tempChar);
+                                            tempChar.Die();
+                                            if (enemies.Count == 0)
+                                                SpawnEnemy();
+                                            killCount++;
+
+                                            PlaySound(basePath + @"\Assets\SFX\Death.wav");
+                                            if (rng.Next(0, 2) == 0) //generate ammo box
+                                            {
+                                                Consumable box = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\AmmoBox.png");
+                                                ammoBoxes.Add(box);
+                                            }
+                                            else //generate medkit
+                                            {
+                                                Consumable medkit = new Consumable(tempChar.X + 25, tempChar.Y + 25, basePath + @"Assets\Textures\Medkit.png");
+                                                medkits.Add(medkit);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                        if (mapGrid[b.X / 10, b.Y / 10].material == GridItem.Material.Wall)
+                        {
+                            bullets.Remove(b);
+                        }
                     }
-                    if (mapGrid[b.X / 10, b.Y / 10].material == GridItem.Material.Wall)
+                    else
                     {
                         bullets.Remove(b);
                     }
                 }
-                else
-                {
-                    bullets.Remove(b);
-                }
-            }
 
-            for (int i = 0; i < ammoBoxes.Count; i++)
-            {
-                Consumable ammo = ammoBoxes[i];
-                if ((player.X + player.width) > (ammo.X) && (player.X) < (ammo.X + 50))
+                for (int i = 0; i < ammoBoxes.Count; i++)
                 {
-                    if ((player.Y + player.height) > ammo.Y && (player.Y) < (ammo.Y + 50))
+                    Consumable ammo = ammoBoxes[i];
+                    if ((player.X + player.width) > (ammo.X) && (player.X) < (ammo.X + 50))
                     {
-                        int ran = rng.Next(10, 21);
-                        ammoCount += ran;
-                        ammoBoxes.RemoveAt(i);
-                        Label lbl = new Label();
-                        lbl.Name = i.ToString();
-                        lbl.Text = "+" + ran;
-                        lbl.Location = new Point(player.centerX, player.centerY);
-                        lbl.AutoSize = true;
-                        lbl.Font = new Font("Verdana", 15);
-                        lbl.BackColor = Color.Black;
-                        lbl.ForeColor = Color.Lime;
-                        this.Controls.Add(lbl);
-                        lbl.BringToFront();
-                        labels.Add(lbl);
-                        ticks.Add(30);
-                        label2.ForeColor = Color.White;
-                        label2.BackColor = Color.Black;
-                        new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Reload.wav");
+                        if ((player.Y + player.height) > ammo.Y && (player.Y) < (ammo.Y + 50))
+                        {
+                            int ran = rng.Next(10, 21);
+                            ammoCount += ran;
+                            ammoBoxes.RemoveAt(i);
+                            Label lbl = new Label();
+                            lbl.Name = i.ToString();
+                            lbl.Text = "+" + ran;
+                            lbl.Location = new Point(player.centerX, player.centerY);
+                            lbl.AutoSize = true;
+                            lbl.Font = new Font("Verdana", 15);
+                            lbl.BackColor = Color.Black;
+                            lbl.ForeColor = Color.Lime;
+                            this.Controls.Add(lbl);
+                            lbl.BringToFront();
+                            labels.Add(lbl);
+                            ticks.Add(30);
+                            label2.ForeColor = Color.White;
+                            label2.BackColor = Color.Black;
+                            PlaySound(basePath + @"\Assets\SFX\Reload.wav");
+                        }
                     }
                 }
-            }
-            //medkit pickup
-            for (int i = 0; i < medkits.Count; i++)
-            {
-                Consumable med = medkits[i];
-                if ((player.X + player.width) > (med.X) && (player.X) < (med.X + 50))
+                //medkit pickup
+                for (int i = 0; i < medkits.Count; i++)
                 {
-                    if ((player.Y + player.height) > med.Y && (player.Y) < (med.Y + 50))
+                    Consumable med = medkits[i];
+                    if ((player.X + player.width) > (med.X) && (player.X) < (med.X + 50))
                     {
-                        player.health += 30;
-                        if (player.health > 100)
-                            player.health = 100;
-                        medkits.RemoveAt(i);
-                        Label lbl = new Label();
-                        lbl.Name = i.ToString();
-                        lbl.Text = "+" + 30;
-                        lbl.Location = new Point(player.centerX, player.centerY);
-                        lbl.AutoSize = true;
-                        lbl.Font = new Font("Verdana", 15);
-                        lbl.BackColor = Color.Red;
-                        lbl.ForeColor = Color.White;
-                        Controls.Add(lbl);
-                        lbl.BringToFront();
-                        labels.Add(lbl);
-                        ticks.Add(30);
-                        new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Reload.wav");
-                        progressBar1.Value = player.health;
+                        if ((player.Y + player.height) > med.Y && (player.Y) < (med.Y + 50))
+                        {
+                            player.health += 30;
+                            if (player.health > 100)
+                                player.health = 100;
+                            medkits.RemoveAt(i);
+                            Label lbl = new Label();
+                            lbl.Name = i.ToString();
+                            lbl.Text = "+" + 30;
+                            lbl.Location = new Point(player.centerX, player.centerY);
+                            lbl.AutoSize = true;
+                            lbl.Font = new Font("Verdana", 15);
+                            lbl.BackColor = Color.Red;
+                            lbl.ForeColor = Color.White;
+                            Controls.Add(lbl);
+                            lbl.BringToFront();
+                            labels.Add(lbl);
+                            ticks.Add(30);
+                            PlaySound(basePath + @"\Assets\SFX\Reload.wav");
+                            progressBar1.Value = player.health;
+                        }
                     }
                 }
-            }
-            //label animation
-            for (int i = 0; i < labels.Count; i++)
-            {
-                ticks[i]--;
-                labels[i].Location = new Point(labels[i].Location.X, labels[i].Location.Y - 2);
-                if (ticks[i] <= 0)
+                //label animation
+                for (int i = 0; i < labels.Count; i++)
                 {
-                    this.Controls.Remove(labels[i]);
-                    labels.RemoveAt(i);
-                    ticks.RemoveAt(i);
+                    ticks[i]--;
+                    labels[i].Location = new Point(labels[i].Location.X, labels[i].Location.Y - 2);
+                    if (ticks[i] <= 0)
+                    {
+                        this.Controls.Remove(labels[i]);
+                        labels.RemoveAt(i);
+                        ticks.RemoveAt(i);
+                    }
                 }
-            }
-            // Player angle
-            player.angle = CalcAngle(player, mouseX, mouseY);
-            if (generateEnemies && timer % 200 == 0) //2s timer
-            {
-                //za každých 10s se spawne +1 enemy
-                for (int i = 0; i < timer / (1000 * i + 1); i++)
-                    SpawnEnemy();
-            }
-            if (timer % 700 == 0) //7s timer
-            {
-                if (rng.Next(0, 2) == 0)
+                // Player angle
+                player.angle = CalcAngle(player, mouseX, mouseY);
+                if (generateEnemies && timer % 200 == 0) //2s timer
                 {
-                    ammoBoxes.Add(new Consumable(spawnPoints[rng.Next(0, spawnPoints.Count())], basePath + @"Assets\Textures\AmmoBox.png"));
+                    //za každých 10s se spawne +1 enemy
+                    for (int i = 0; i < timer / (1000 * i + 1); i++)
+                        SpawnEnemy();
                 }
-                else
+                if (timer % 700 == 0) //7s timer
                 {
-                    medkits.Add(new Consumable(spawnPoints[rng.Next(0, spawnPoints.Count())], basePath + @"Assets\Textures\Medkit.png"));
+                    if (rng.Next(0, 2) == 0)
+                    {
+                        ammoBoxes.Add(new Consumable(spawnPoints[rng.Next(0, spawnPoints.Count())], basePath + @"Assets\Textures\AmmoBox.png"));
+                    }
+                    else
+                    {
+                        medkits.Add(new Consumable(spawnPoints[rng.Next(0, spawnPoints.Count())], basePath + @"Assets\Textures\Medkit.png"));
+                    }
                 }
-            }
 
-            // Enemy handler
-            foreach (Character enemy in enemies)
+                // Enemy handler
+                foreach (Character enemy in enemies)
+                {
+
+                    enemy.angle = CalcAngle(enemy, player.centerX, player.centerY);
+                    if (rng.Next(1, 100) == 1)
+                        ShootBullet(enemy);
+
+                    if (Math.Abs(enemy.X - enemy.target.X) <= 5)
+                        enemy.target.X = enemy.X;
+                    if (Math.Abs(enemy.Y - enemy.target.Y) <= 5)
+                        enemy.target.Y = enemy.Y;
+
+                    if (enemy.position == enemy.target)//nový cíl pokud ke stávajícímu dojde
+                    {
+                        enemy.target = spawnPoints[rng.Next(0, spawnPoints.Count())];
+                    }
+                    //pohyb k cíli
+                    enemy.MoveBy(new Point(enemy.X > enemy.target.X ? -3 : enemy.target.X == enemy.X ? 0 : 3,
+                                enemy.Y > enemy.target.Y ? -3 : enemy.target.Y == enemy.Y ? 0 : 3));
+                }
+
+                // Bullet cooldown
+                if (bulletCooldown && timer % 10 == 0)
+                    bulletCooldown = false;
+
+                label1.Text = "Score: " + score;
+                label2.Text = "Ammo: " + ammoCount;
+
+                pictureBox2.Invalidate();
+            }
+            catch
             {
-
-                enemy.angle = CalcAngle(enemy, player.centerX, player.centerY);
-                if (rng.Next(1, 100) == 1)
-                    ShootBullet(enemy);
-
-                if (Math.Abs(enemy.X - enemy.target.X) <= 5)
-                    enemy.target.X = enemy.X;
-                if (Math.Abs(enemy.Y - enemy.target.Y) <= 5)
-                    enemy.target.Y = enemy.Y;
-
-                if (enemy.position == enemy.target)//nový cíl pokud ke stávajícímu dojde
-                {
-                    enemy.target = spawnPoints[rng.Next(0, spawnPoints.Count())];
-                }
-                //pohyb k cíli
-                enemy.MoveBy(enemy.X > enemy.target.X ? -3 : enemy.target.X == enemy.X ? 0 : 3,
-                            enemy.Y > enemy.target.Y ? -3 : enemy.target.Y == enemy.Y ? 0 : 3);
+                MessageBox.Show("Něco se pokazilo. Hra se vypíná.");
+                Application.Exit();
             }
-
-            // Bullet cooldown
-            if (bulletCooldown && timer % 10 == 0)
-                bulletCooldown = false;
-
-            label1.Text = "Score: " + score;
-            label2.Text = "Ammo: " + ammoCount;
-
-            pictureBox2.Invalidate();
         }
 
         public double CalcAngle(Character character, int x, int y)
@@ -530,7 +556,6 @@ namespace Top_down_shooter
             double bulletAngle = character.angle + rng.Next(-2, 3);
             double rad = bulletAngle * Math.PI / 180;
 
-            //chyba, kulka se pohybuje po stejným vektoru ale z pušky, takže má offset
             Bullet bullet = new Bullet(character.centerX - 3 + (int)(Math.Sin(Math.PI / 2 + rad) * 30), character.centerY - 8 - (int)(Math.Cos(Math.PI / 2 + rad) * 35), (float)character.angle, false);
             bullet.speedX = (int)(Math.Sin(rad) * bullet.speed);
             bullet.speedY = (int)-(Math.Cos(rad) * bullet.speed);
@@ -538,13 +563,15 @@ namespace Top_down_shooter
             bullet.originChar = character;
             bullets.Add(bullet);
 
-            //Přehraje zvuk v cestě
-            new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Shoot.wav");
+            bulletMP.Open(new Uri(basePath + @"Assets\SFX\Shoot.wav"));
+            bulletMP.Play();
         }
 
-        public static void PlaySound(object path)
+        public void PlaySound(string path)
         {
-            new SoundPlayer((string)path).Play();
+            System.Windows.Media.MediaPlayer mp = new System.Windows.Media.MediaPlayer();
+            mp.Open(new Uri(path));
+            mp.Play();
         }
 
         private void game_graphics(object sender, PaintEventArgs e)
@@ -561,8 +588,8 @@ namespace Top_down_shooter
             Image enemyImage = Image.FromFile(basePath + "Assets/Textures/EnemyIcon.png");
 
             // Draw GUI line
-            graphics.DrawLine(new Pen(Brushes.Black, 125), new Point(0,0), new Point(ActiveForm.Width, 0));
-             
+            //graphics.DrawLine(new Pen(Brushes.Black, 125), new Point(0, 0), new Point(ActiveForm.Width, 0));
+
             // Draw ammo boxes & medkits
             foreach (Consumable box in ammoBoxes)
                 graphics.DrawImage(Image.FromFile(box.texturePath), box.X, box.Y);
@@ -594,8 +621,6 @@ namespace Top_down_shooter
                 else
                     color = Color.Lime;
                 graphics.DrawRectangle(new Pen(color, 5), enemy.X + 10, enemy.Y + 120, (int)(0.7 * enemy.health), 5);
-
-                graphics.DrawLine(new Pen(Brushes.Red, 2), enemy.position, enemy.target);
             }
             graphics.Restore(state);
             if (debugMode)
@@ -613,6 +638,7 @@ namespace Top_down_shooter
 
         public void Rotate(int x, int y, double angle, Graphics g)
         {
+            if (double.IsNaN(angle)) return;
             g.TranslateTransform(x, y);
             g.RotateTransform((float)angle);
             g.TranslateTransform(-x, -y);
@@ -626,7 +652,7 @@ namespace Top_down_shooter
             Character enemy = new Character(spawnPoint);
             enemy.isEnemy = true;
             enemies.Add(enemy);
-            new Thread(new ParameterizedThreadStart(ValidateCharGrid)).Start(enemy);
+            ValidateCharGrid(enemy);
         }
 
         /// <summary>
@@ -639,12 +665,11 @@ namespace Top_down_shooter
             enemy.isEnemy = true;
             enemy.target = spawnPoints[rng.Next(0, spawnPoints.Count())];
             enemies.Add(enemy);
-            new Thread(new ParameterizedThreadStart(ValidateCharGrid)).Start(enemy);
+            ValidateCharGrid(enemy);
         }
 
-        public void ValidateCharGrid(object o)
+        public void ValidateCharGrid(Character c)
         {
-            Character c = (Character)o;
             bool enemy = enemies.Contains(c);
             for (int i = c.X / 10 + 1; i < (c.X + c.width) / 10 - 2; i++)
             {
@@ -657,6 +682,11 @@ namespace Top_down_shooter
                     }
                 }
             }
+        }
+
+        private void TickTimer_Tick(object sender, EventArgs e)
+        {
+            timer++;
         }
     }
 }

@@ -89,7 +89,7 @@ namespace Top_down_shooter
             controlsH.Visible = false;
             ctrls.Add(controlsH);
 
-            controlsTxt.Text = "Movement: WASD\nShooting: Left Mouse Button\nMenu: ESC";
+            controlsTxt.Text = "Movement: WASD\nShooting: Left Mouse Button\nMenu: ESC\n\n\nPřes krabice se nedá přeskočit,\nale můžete je přestřelit.";
             controlsTxt.Location = new Point(175, 250);
             controlsTxt.AutoSize = true;
             controlsTxt.Font = new Font("Verdana", 25);
