@@ -16,8 +16,6 @@ namespace Top_down_shooter
         Button playBtn = new Button();
         Button resBtn = new Button();
         Button ctrlBtn = new Button();
-        Button load = new Button();
-        Button ldrbrd = new Button();
         Button about = new Button();
         Button back = new Button();
         Button quit = new Button();
@@ -48,7 +46,7 @@ namespace Top_down_shooter
             menuPic.BringToFront();
 
             playBtn.Text = "PLAY";
-            playBtn.Location = new Point(150, 500);
+            playBtn.Location = new Point(150, 675);
             playBtn.AutoSize = true;
             playBtn.Font = new Font("Verdana", 25);
             playBtn.BackColor = Color.Black;
@@ -59,7 +57,7 @@ namespace Top_down_shooter
             buttons.Add(playBtn);
 
             resBtn.Text = "RESTART";
-            resBtn.Location = new Point(284, 500);
+            resBtn.Location = new Point(284, 675);
             resBtn.AutoSize = true;
             resBtn.Font = new Font("Verdana", 25);
             resBtn.BackColor = Color.Black;
@@ -69,30 +67,8 @@ namespace Top_down_shooter
             resBtn.BringToFront();
             buttons.Add(resBtn);
 
-            load.Text = "LOAD SCORE";
-            load.Location = new Point(150, 570);
-            load.AutoSize = true;
-            load.Font = new Font("Verdana", 25);
-            load.BackColor = Color.Black;
-            load.ForeColor = Color.White;
-            load.Click += Load_Click;
-            this.form.Controls.Add(load);
-            load.BringToFront();
-            buttons.Add(load);
-
-            ldrbrd.Text = "LEADERBOARD";
-            ldrbrd.Location = new Point(420, 570);
-            ldrbrd.AutoSize = true;
-            ldrbrd.Font = new Font("Verdana", 25);
-            ldrbrd.BackColor = Color.Black;
-            ldrbrd.ForeColor = Color.White;
-            ldrbrd.Click += Ldrbrd_Click;
-            this.form.Controls.Add(ldrbrd);
-            ldrbrd.BringToFront();
-            buttons.Add(ldrbrd);
-
             ctrlBtn.Text = "CONTROLS";
-            ctrlBtn.Location = new Point(489, 500);
+            ctrlBtn.Location = new Point(150, 750);
             ctrlBtn.AutoSize = true;
             ctrlBtn.Font = new Font("Verdana", 25);
             ctrlBtn.BackColor = Color.Black;
@@ -125,7 +101,7 @@ namespace Top_down_shooter
             ctrls.Add(controlsTxt);
 
             about.Text = "ABOUT";
-            about.Location = new Point(150, 640);
+            about.Location = new Point(385, 750);
             about.AutoSize = true;
             about.Font = new Font("Verdana", 25);
             about.BackColor = Color.Black;
@@ -179,7 +155,7 @@ namespace Top_down_shooter
             this.form.Controls.Add(quit);
             quit.BringToFront();
             buttons.Add(quit);
-            
+
         }
 
         private void MenuPic_Paint(object sender, PaintEventArgs e)
@@ -207,16 +183,6 @@ namespace Top_down_shooter
             controlsTxt.Visible = true;
         }
 
-        private void Load_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("zatim nic");
-        }
-
-        private void Ldrbrd_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("zatim nic");
-        }
-
         private void About_Click(object sender, EventArgs e)
         {
             HideMain();
@@ -231,7 +197,7 @@ namespace Top_down_shooter
                 btn.Visible = false;
             back.Visible = true;
             menuPic.Image = null;
-            
+
         }
 
         private void Back_Click(object sender, EventArgs e)

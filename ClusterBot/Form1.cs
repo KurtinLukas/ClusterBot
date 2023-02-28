@@ -41,15 +41,16 @@ namespace Top_down_shooter
         int mouseX;
         int mouseY;
         int timer = 0;
-        public static Point[] spawnPoints = { new Point(110,95), new Point(300,90), new Point(30, 290), new Point(30, 530), 
-            new Point(110,440), new Point(140,670), new Point(30,830), new Point(270,840), new Point(320,300), 
+        bool bulletCooldown = false;
+        public static Point[] spawnPoints = { new Point(110,95), new Point(300,90), new Point(30, 290), new Point(30, 530),
+            new Point(110,440), new Point(140,670), new Point(30,830), new Point(270,840), new Point(320,300),
             new Point(850,840), new Point(500,840), new Point(600,600), new Point(520,200) };
 
         int score = 0;
         int highscore;
         int killCount = 0;
         int ammoCount = 50;
-        string hash = "f0xle@rn";
+        string hash = "$clu5T3rB0T";
 
         private string keyLogger = "";
         private bool debugMode = false;
@@ -83,17 +84,16 @@ namespace Top_down_shooter
             player.isEnemy = false;
             speed = 5;
             diagonalSpeed = speed / Math.Sqrt(2);
-            
-            byte[] data = Convert.FromBase64String(File.ReadAllText(basePath + @"Save\Highscore.txt"));
+
+            byte[] data = Convert.FromBase64String(File.ReadAllText(basePath + @"Save\Highscore.crpt"));
             using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
             {
-                byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));//Get hash key
-                //Decrypt data by hash key
+                byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));
                 using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
                 {
                     ICryptoTransform transform = tripDes.CreateDecryptor();
                     byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
-                    highscore = int.Parse(UTF8Encoding.UTF8.GetString(results)); 
+                    highscore = int.Parse(UTF8Encoding.UTF8.GetString(results));
                 }
             }
             label4.Text = "Highscore: " + highscore;
@@ -116,7 +116,7 @@ namespace Top_down_shooter
                 for (int j = 0; j < ActiveForm.Height / 10; j++)
                 {
                     mapGrid[i, j] = new GridItem(i * 10, j * 10);
-                    Color clr = mapImg.GetPixel(i*10, j*10);
+                    Color clr = mapImg.GetPixel(i * 10, j * 10);
                     switch (clr.R)
                     {
                         case 0: mapGrid[i, j].material = GridItem.Material.Wall; break;
@@ -225,12 +225,13 @@ namespace Top_down_shooter
         {
             if (!menu.visible)
             {
-                if (ammoCount > 0 && e.Button == MouseButtons.Left)
+                if (ammoCount > 0 && e.Button == MouseButtons.Left && !bulletCooldown)
                 {
                     score -= 3;
                     ammoCount--;
                     ShootBullet(player);
-                    
+                    bulletCooldown = true;
+
                     if (ammoCount == 0)
                         label2.BackColor = Color.Red;
                     else
@@ -285,7 +286,7 @@ namespace Top_down_shooter
                 //damage enemies
                 if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0)
                 {
-                    if(mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
+                    if (mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
                     {
                         Character tempChar = mapGrid[b.X / 10, b.Y / 10].charOnGrid;
                         if (tempChar != null)
@@ -295,13 +296,13 @@ namespace Top_down_shooter
                                 bullets.Remove(b);
                                 if (tempChar == player)
                                 {
-                                    if(!godMode)
+                                    if (!godMode)
                                         player.health -= 7;
 
                                     if (player.health <= 0)
                                     {
                                         player.health = 0;
-                                    
+
                                         if (score < 0)
                                             MessageBox.Show("Really man? Negative score? Try again, for your own sake.",
                                             "You're actually so bad.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -314,19 +315,18 @@ namespace Top_down_shooter
 
                                         if (score >= highscore)
                                         {
-                                            StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.txt");
+                                            StreamWriter writer = new StreamWriter(basePath + @"Save\Highscore.crpt");
                                             writer.Write(score.ToString());
                                             writer.Close();
-                                            byte[] data = UTF8Encoding.UTF8.GetBytes(File.ReadAllText(basePath + @"Save\Highscore.txt"));
+                                            byte[] data = UTF8Encoding.UTF8.GetBytes(File.ReadAllText(basePath + @"Save\Highscore.crpt"));
                                             using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
                                             {
-                                                byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));//Get hash key
-                                                                                                                //Encrypt data by hash key
+                                                byte[] keys = md5.ComputeHash(UTF8Encoding.UTF8.GetBytes(hash));
                                                 using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
                                                 {
                                                     ICryptoTransform transform = tripDes.CreateEncryptor();
                                                     byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
-                                                    File.WriteAllText(basePath + @"Save\Highscore.txt", Convert.ToBase64String(results, 0, results.Length));
+                                                    File.WriteAllText(basePath + @"Save\Highscore.crpt", Convert.ToBase64String(results, 0, results.Length));
                                                 }
                                             }
                                         }
@@ -457,7 +457,7 @@ namespace Top_down_shooter
             {
                 if (rng.Next(0, 2) == 0)
                 {
-                    ammoBoxes.Add(new Consumable(spawnPoints[rng.Next(0,spawnPoints.Count())], basePath + @"Assets\Textures\AmmoBox.png"));
+                    ammoBoxes.Add(new Consumable(spawnPoints[rng.Next(0, spawnPoints.Count())], basePath + @"Assets\Textures\AmmoBox.png"));
                 }
                 else
                 {
@@ -468,7 +468,7 @@ namespace Top_down_shooter
             // Enemy handler
             foreach (Character enemy in enemies)
             {
-                
+
                 enemy.angle = CalcAngle(enemy, player.centerX, player.centerY);
                 if (rng.Next(1, 100) == 1)
                     ShootBullet(enemy);
@@ -480,12 +480,16 @@ namespace Top_down_shooter
 
                 if (enemy.position == enemy.target)//nový cíl pokud ke stávajícímu dojde
                 {
-                    enemy.target = spawnPoints[rng.Next(0,spawnPoints.Count())];
+                    enemy.target = spawnPoints[rng.Next(0, spawnPoints.Count())];
                 }
                 //pohyb k cíli
-                enemy.MoveBy(enemy.X > enemy.target.X ? -3 : enemy.target.X == enemy.X ? 0 : 3, 
+                enemy.MoveBy(enemy.X > enemy.target.X ? -3 : enemy.target.X == enemy.X ? 0 : 3,
                             enemy.Y > enemy.target.Y ? -3 : enemy.target.Y == enemy.Y ? 0 : 3);
             }
+
+            // Bullet cooldown
+            if (bulletCooldown && timer % 10 == 0)
+                bulletCooldown = false;
 
             label1.Text = "Score: " + score;
             label2.Text = "Ammo: " + ammoCount;
@@ -533,52 +537,6 @@ namespace Top_down_shooter
         {
             new SoundPlayer((string)path).Play();
         }
-
-        
-        public void Encrypt(string path)
-        {
-            /*string password = @"crypt123";
-            UnicodeEncoding UE = new UnicodeEncoding();
-            byte[] key = UE.GetBytes(password);
-
-            string cryptfile = path;
-            FileStream fsCrypt = new FileStream(cryptfile, FileMode.Create);
-
-            RijndaelManaged RMCrypto = new RijndaelManaged();
-            CryptoStream cs = new CryptoStream(fsCrypt, RMCrypto.CreateEncryptor(key, key), CryptoStreamMode.Write);
-
-            FileStream fsIn = new FileStream(basePath + @"\Save\Highscore.txt", FileMode.Open);
-
-            int data;
-            while ((data = fsIn.ReadByte()) != -1)
-                cs.WriteByte((byte)data);
-            fsIn.Close();
-            cs.Close();
-            fsCrypt.Close();*/
-            
-        }
-        public void Decrypt(string path)
-        {
-            string password = @"crypt123";
-
-            UnicodeEncoding UE = new UnicodeEncoding();
-            byte[] key = UE.GetBytes(password);
-
-            FileStream fsCrypt = new FileStream(path, FileMode.Open);
-
-            RijndaelManaged RMCrypto = new RijndaelManaged();
-            CryptoStream cs = new CryptoStream(fsCrypt, RMCrypto.CreateEncryptor(key, key), CryptoStreamMode.Read);
-
-            FileStream fsOut = new FileStream(basePath + @"\Save\Highscore.txt", FileMode.Create);
-
-            int data;
-            while ((data = cs.ReadByte()) != -1)
-                fsOut.WriteByte((byte)data);
-            fsOut.Close();
-            cs.Close();
-            fsCrypt.Close();
-        }
-
 
         private void game_graphics(object sender, PaintEventArgs e)
         {
