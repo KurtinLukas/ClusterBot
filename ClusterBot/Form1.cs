@@ -233,9 +233,10 @@ namespace Top_down_shooter
                     bulletCooldown = true;
 
                     if (ammoCount == 0)
+                    {
+                        label2.ForeColor = Color.Black;
                         label2.BackColor = Color.Red;
-                    else
-                        label2.BackColor = Color.Transparent;
+                    }
                 }
             }
         }
@@ -341,9 +342,16 @@ namespace Top_down_shooter
                                     {
                                         score += 100;
                                         if (score > highscore)
+                                        {
+                                            label1.ForeColor = Color.Black;
                                             label1.BackColor = Color.Lime;
+                                        }
                                         else
-                                            label1.BackColor = Color.Transparent;
+                                        {
+                                            label1.ForeColor = Color.White;
+                                            label1.BackColor = Color.Black;
+                                        }
+                                           
                                         enemies.Remove(tempChar);
                                         tempChar.Die();
                                         if (enemies.Count == 0)
@@ -399,7 +407,8 @@ namespace Top_down_shooter
                         lbl.BringToFront();
                         labels.Add(lbl);
                         ticks.Add(30);
-                        label2.BackColor = Color.Transparent;
+                        label2.ForeColor = Color.White;
+                        label2.BackColor = Color.Black;
                         new Thread(new ParameterizedThreadStart(PlaySound)).Start(basePath + @"\Assets\SFX\Reload.wav");
                     }
                 }
@@ -551,6 +560,9 @@ namespace Top_down_shooter
             Image bulletImage = Image.FromFile(basePath + "Assets/Textures/Bullet.png");
             Image enemyImage = Image.FromFile(basePath + "Assets/Textures/EnemyIcon.png");
 
+            // Draw GUI line
+            graphics.DrawLine(new Pen(Brushes.Black, 125), new Point(0,0), new Point(ActiveForm.Width, 0));
+             
             // Draw ammo boxes & medkits
             foreach (Consumable box in ammoBoxes)
                 graphics.DrawImage(Image.FromFile(box.texturePath), box.X, box.Y);
