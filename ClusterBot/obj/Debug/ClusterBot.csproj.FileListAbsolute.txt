@@ -46,8 +46,6 @@ G:\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.SuggestedBindingRedirec
 G:\RPR\GitHub\ClusterBot\ClusterBot\bin\Debug\ClusterBot.exe.config
 G:\RPR\GitHub\ClusterBot\ClusterBot\bin\Debug\ClusterBot.exe
 G:\RPR\GitHub\ClusterBot\ClusterBot\bin\Debug\ClusterBot.pdb
-G:\RPR\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.AssemblyReference.cache
-G:\RPR\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.SuggestedBindingRedirects.cache
 G:\RPR\GitHub\ClusterBot\ClusterBot\obj\Debug\Top_down_shooter.Form1.resources
 G:\RPR\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.Properties.Resources.resources
 G:\RPR\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csproj.GenerateResource.cache
@@ -60,3 +58,4 @@ M:\ITA3\matlj.04\RPR\ClusterBot\ClusterBot\bin\Debug\ClusterBot.pdb
 M:\ITA3\matlj.04\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.Properties.Resources.resources
 M:\ITA3\matlj.04\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.exe
 M:\ITA3\matlj.04\RPR\ClusterBot\ClusterBot\obj\Debug\ClusterBot.pdb
+G:\RPR\GitHub\ClusterBot\ClusterBot\obj\Debug\ClusterBot.csprojAssemblyReference.cache

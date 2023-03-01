@@ -62,7 +62,7 @@ namespace Top_down_shooter
         Character player;
         public static GridItem[,] mapGrid;
         public List<Character> enemies = new List<Character>();
-        public static string basePath = Assembly.GetExecutingAssembly().CodeBase.Substring(8);
+        public static string basePath = Assembly.GetExecutingAssembly().Location;
 
         public Form1()
         {
@@ -76,8 +76,8 @@ namespace Top_down_shooter
             //FormBorderStyle = FormBorderStyle.None;
             //WindowState = FormWindowState.Maximized;
             basePath = basePath.Remove(basePath.LastIndexOf("ClusterBot.exe"));
-
             //MessageBox.Show(basePath);    //<-- při změně cesty se musí přenastavit! (2 řádky nahoru)
+
 
             this.KeyPreview = true;
             menu = new Menu(this, timer1, basePath);
