@@ -37,16 +37,16 @@ namespace Top_down_shooter
             this.timer = timer;
             this.basePath = basePath;
             img = Image.FromFile(basePath + "Assets/Textures/main_logo2.png");
-
-            menuPic.Location = new Point(100, 100);
-            menuPic.Size = new Size(800, 750);
+            
+            menuPic.Location = new Point(form.Width/10, form.Width/10);
+            menuPic.Size = new Size((int)Math.Floor(form.Width/1.25), (int)Math.Floor(form.Width/1.3));
             menuPic.Paint += MenuPic_Paint;
             menuPic.Image = img;
             this.form.Controls.Add(menuPic);
             menuPic.BringToFront();
 
             playBtn.Text = "PLAY";
-            playBtn.Location = new Point(150, 675);
+            playBtn.Location = new Point((int)Math.Floor(form.Width/6.6), (int)Math.Floor(form.Width/1.5));
             playBtn.AutoSize = true;
             playBtn.Font = new Font("Verdana", 25);
             playBtn.BackColor = Color.Black;
@@ -57,7 +57,7 @@ namespace Top_down_shooter
             buttons.Add(playBtn);
 
             resBtn.Text = "RESTART";
-            resBtn.Location = new Point(284, 675);
+            resBtn.Location = new Point((int)Math.Floor(form.Width/3.5), (int)Math.Floor(form.Width/1.5));
             resBtn.AutoSize = true;
             resBtn.Font = new Font("Verdana", 25);
             resBtn.BackColor = Color.Black;
@@ -68,7 +68,7 @@ namespace Top_down_shooter
             buttons.Add(resBtn);
 
             ctrlBtn.Text = "CONTROLS";
-            ctrlBtn.Location = new Point(150, 750);
+            ctrlBtn.Location = new Point((int)Math.Floor(form.Width / 6.6), (int)Math.Floor(form.Width/1.3));
             ctrlBtn.AutoSize = true;
             ctrlBtn.Font = new Font("Verdana", 25);
             ctrlBtn.BackColor = Color.Black;
@@ -79,7 +79,7 @@ namespace Top_down_shooter
             buttons.Add(ctrlBtn);
 
             controlsH.Text = "CONTROLS";
-            controlsH.Location = new Point(150, 150);
+            controlsH.Location = new Point((int)Math.Floor(form.Width / 6.6), form.Width / 66);
             controlsH.AutoSize = true;
             controlsH.Font = new Font("Verdana", 35);
             controlsH.BackColor = Color.Black;
@@ -90,7 +90,7 @@ namespace Top_down_shooter
             ctrls.Add(controlsH);
 
             controlsTxt.Text = "Movement: WASD\nShooting: Left Mouse Button\nMenu: ESC\n\n\nPřes krabice se nedá přeskočit,\nale můžete je přestřelit.";
-            controlsTxt.Location = new Point(175, 250);
+            controlsTxt.Location = new Point(form.Width / 8, form.Width / 4);
             controlsTxt.AutoSize = true;
             controlsTxt.Font = new Font("Verdana", 25);
             controlsTxt.BackColor = Color.Black;
@@ -101,7 +101,7 @@ namespace Top_down_shooter
             ctrls.Add(controlsTxt);
 
             about.Text = "ABOUT";
-            about.Location = new Point(385, 750);
+            about.Location = new Point((int)Math.Floor(form.Width/2.6), (int)Math.Floor(form.Width/1.3));
             about.AutoSize = true;
             about.Font = new Font("Verdana", 25);
             about.BackColor = Color.Black;
@@ -112,7 +112,7 @@ namespace Top_down_shooter
             buttons.Add(about);
 
             aboutH.Text = "ABOUT";
-            aboutH.Location = new Point(150, 150);
+            aboutH.Location = new Point((int)Math.Floor(form.Width/6.6), (int)Math.Floor(form.Width / 6.6));
             aboutH.AutoSize = true;
             aboutH.Font = new Font("Verdana", 35);
             aboutH.BackColor = Color.Black;
@@ -123,7 +123,7 @@ namespace Top_down_shooter
             ctrls.Add(aboutH);
 
             aboutTxt.Text = "ClusterBot je druhý projekt do předmětu\n\"Řízení projektů\" na škole SPŠT, jedná se\no hru vytvořenou ve Windows forms\nv jazyce C# a byla vytvořena ve třech\ntýdenních sprintech. Podrobněji je to\narkádová top - down střílečka na skóre.\n\nVývojový tým:\nLukáš Kurtin - Kapitán, programátor, SFX\nJan Mátl - Programátor, web designer\nVojtěch Mastný - Grafický designer";
-            aboutTxt.Location = new Point(175, 250);
+            aboutTxt.Location = new Point((int)Math.Floor(form.Width / 5.7), form.Width/4);
             aboutTxt.AutoSize = true;
             aboutTxt.Font = new Font("Verdana", 20);
             aboutTxt.BackColor = Color.Black;
@@ -134,7 +134,7 @@ namespace Top_down_shooter
             ctrls.Add(aboutTxt);
 
             back.Text = "BACK";
-            back.Location = new Point(725, 750);
+            back.Location = new Point((int)Math.Floor(form.Width / 1.38), (int)Math.Floor(form.Width / 1.3));
             back.AutoSize = true;
             back.Font = new Font("Verdana", 25);
             back.BackColor = Color.Black;
@@ -146,7 +146,7 @@ namespace Top_down_shooter
             ctrls.Add(back);
 
             quit.Text = "QUIT";
-            quit.Location = new Point(725, 750);
+            quit.Location = new Point((int)Math.Floor(form.Width / 1.38), (int)Math.Floor(form.Width / 1.3));
             quit.AutoSize = true;
             quit.Font = new Font("Verdana", 25);
             quit.BackColor = Color.Black;

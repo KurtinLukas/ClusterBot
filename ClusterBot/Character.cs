@@ -32,6 +32,8 @@ namespace Top_down_shooter
         //pohyb
         public void MoveBy(Point p)
         {
+            width = Form1.formSize.Width/10;
+            height = Form1.formSize.Height/10;
             try
             {
                 int posX = p.X;
@@ -40,10 +42,10 @@ namespace Top_down_shooter
                     return;
                 mapGrid = Form1.mapGrid;
 
-                collisionRight = X + posX + width > Form1.ActiveForm.Width - 15;
+                collisionRight = X + posX + width > width*10 - 15;
                 collisionLeft = X + posX < 0;
                 collisionUp = Y + posY < 65;
-                collisionDown = Y + posY + height > Form1.ActiveForm.Height - 45;
+                collisionDown = Y + posY + height > height*10 - 45;
 
                 //can check for gridItem movement for optimalization
 
@@ -149,7 +151,7 @@ namespace Top_down_shooter
             }
             catch
             {
-                MessageBox.Show("Něco se pokazilo, prosím vraťte Vaše změny v souborech zpět nebo odzipujte hru znovu.");
+                MessageBox.Show("Pokazila se inicializace hráče.");
                 Application.Exit();
             }
         }

@@ -32,6 +32,7 @@ namespace Top_down_shooter
         Menu menu;
 
         Random rng = new Random();
+        public static Size formSize;
         bool left = false;
         bool right = false;
         bool up = false;
@@ -42,9 +43,7 @@ namespace Top_down_shooter
         int mouseY;
         int timer = 10;
         bool bulletCooldown = false;
-        public static Point[] spawnPoints = { new Point(110,95), new Point(300,90), new Point(30, 290), new Point(30, 530),
-            new Point(110,440), new Point(140,670), new Point(30,830), new Point(270,840), new Point(320,300),
-            new Point(850,840), new Point(500,840), new Point(600,600), new Point(520,200), new Point(850, 440) };
+        public static Point[] spawnPoints;
 
         int score = 0;
         int highscore;
@@ -53,7 +52,7 @@ namespace Top_down_shooter
         string hash = "$clu5T3rB0T";
 
         private string keyLogger = "";
-        private bool debugMode = false;
+        private bool debugMode = true;
         private bool generateEnemies = true;
         private bool godMode = false;
 
@@ -67,6 +66,33 @@ namespace Top_down_shooter
         public Form1()
         {
             InitializeComponent();
+            Height = Screen.PrimaryScreen.Bounds.Height;
+            Width = Screen.PrimaryScreen.Bounds.Width;
+            if(Height > 1000)
+            {
+                Height = 1000;
+                Width = 1000;
+            }
+            pictureBox2.Size = new Size(Height, Width);
+            formSize = new Size(Width, Height);
+            spawnPoints = new Point[]{
+                new Point(Width/9, Height/10), 
+                new Point(Width/3, Height/111), 
+                new Point(Width/33, (int)Math.Floor(Width/3.4)), 
+                new Point(Width/33, (int)Math.Floor(Width/1.88)),
+                new Point(Width/9, (int)Math.Floor(Width/2.3)), 
+                new Point(Width/10, (int)Math.Floor(Width/1.5)), 
+                new Point(Width/33, (int)Math.Floor(Width/1.15)), 
+                new Point((int)Math.Floor(Width/3.7), (int)Math.Floor(Width/1.2)), 
+                new Point(Width/3, Width/3),
+                new Point((int)Math.Floor(Width/1.2), (int)Math.Floor(Width/1.2)),
+                new Point(Width/2, (int)Math.Floor(Width/1.2)), 
+                new Point((int)Math.Floor(Width/1.5), (int)Math.Floor(Width/1.5)), 
+                new Point(Width/2, Width/5), 
+                new Point((int)Math.Floor(Width/1.2), (int)Math.Floor(Width/2.3)) 
+                    };
+            speed = Width/500;
+            diagonalSpeed = Width/150 / Math.Sqrt(2);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -81,14 +107,12 @@ namespace Top_down_shooter
 
             this.KeyPreview = true;
             menu = new Menu(this, timer1, basePath);
-
+            
             player = new Character(spawnPoints[rng.Next(0, spawnPoints.Count())]);
             player.isEnemy = false;
-            speed = 5;
-            diagonalSpeed = speed / Math.Sqrt(2);
             if (!File.Exists(basePath + @"Save\Highscore.crpt") || !File.Exists(basePath + @"Assets\Textures\mapSkeleton.png") || !File.Exists(basePath + @"Assets\SFX\Shoot.wav"))
             {
-                MessageBox.Show("Něco se pokazilo, prosím vraťte Vaše změny v souborech zpět nebo odzipujte hru znovu.");
+                MessageBox.Show("Nebyly nalezeny herní soubory. Prosím vraťte Vaše změny v souborech zpět nebo odzipujte hru znovu.");
                 Close();
                 return;
             }
@@ -116,7 +140,7 @@ namespace Top_down_shooter
             }
             catch
             {
-                MessageBox.Show("Něco se pokazilo, prosím vraťte Vaše změny v souborech zpět nebo odzipujte hru znovu, popřípadě kontaktujte vývojáře na e-mailu kurtinl.04@spst.eu .");
+                MessageBox.Show("Pokazilo se ukládání dat. Prosím kontaktujte vývojáře na e-mailu kurtinl.04@spst.eu .");
                 Application.Exit();
             }
         }
@@ -127,13 +151,13 @@ namespace Top_down_shooter
             try
             {
                 Bitmap mapImg = new Bitmap(basePath + "Assets/Textures/mapSkeleton.png");
-                mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
-                for (int i = 0; i < ActiveForm.Width / 10; i++)
+                mapGrid = new GridItem[100, 100];
+                for (int i = 0; i < 100; i++)
                 {
-                    for (int j = 0; j < ActiveForm.Height / 10; j++)
+                    for (int j = 0; j < 100; j++)
                     {
-                        mapGrid[i, j] = new GridItem(i * 10, j * 10);
-                        Color clr = mapImg.GetPixel(i * 10, j * 10);
+                        mapGrid[i, j] = new GridItem(Width / 100, Height / 100);
+                        Color clr = mapImg.GetPixel(i * 10 + 5, j * 10 + 5);
                         switch (clr.R)
                         {
                             case 0: mapGrid[i, j].material = GridItem.Material.Wall; break;
@@ -145,7 +169,7 @@ namespace Top_down_shooter
             }
             catch
             {
-                MessageBox.Show("Něco se pokazilo, prosím vraťte Vaše změny v souborech zpět nebo odzipujte hru znovu, popřípadě kontaktujte vývojáře na e-mailu kurtinl.04@spst.eu .");
+                MessageBox.Show("Pokazila se generace mapy. Prosím kontaktujte vývojáře na e-mailu kurtinl.04@spst.eu .");
                 Application.Exit();
             }
         }
@@ -155,21 +179,21 @@ namespace Top_down_shooter
             if (ActiveForm == null) return;
 
             //rekalkulace gridu
-            mapGrid = new GridItem[ActiveForm.Width / 10, ActiveForm.Height / 10];
-            for (int i = 0; i < ActiveForm.Width / 10; i++)
+            mapGrid = new GridItem[Width / 10, Height / 10];
+            for (int i = 0; i < Width / 10; i++)
             {
-                for (int j = 0; j < ActiveForm.Height / 10; j++)
+                for (int j = 0; j < Height / 10; j++)
                 {
                     mapGrid[i, j] = new GridItem(i * 10, j * 10, GridItem.Material.Air);
                 }
             }
 
-            pictureBox2.Size = new Size(ActiveForm.Width, ActiveForm.Height);
+            pictureBox2.Size = new Size(Width, Height);
 
             // GUI positioning
-            progressBar1.Location = new Point(ActiveForm.Width - progressBar1.Width - 30, progressBar1.Location.Y);
+            progressBar1.Location = new Point(Width - progressBar1.Width - 30, progressBar1.Location.Y);
             label3.Location = new Point(progressBar1.Location.X - label3.Width - 30, label3.Location.Y);
-            label2.Location = new Point(ActiveForm.Width / 3, label2.Location.Y);
+            label2.Location = new Point(Width / 3, label2.Location.Y);
         }
 
         Point moveVector = new Point(0, 0);
@@ -214,6 +238,9 @@ namespace Top_down_shooter
                     break;
                 case "AMMO":
                     ammoCount += 50;
+                    break;
+                case "SCORE":
+                    score += 10000;
                     break;
             }
 
@@ -303,7 +330,7 @@ namespace Top_down_shooter
                 b.Y += b.speedY;
 
                 //damage enemies
-                if (b.X < ActiveForm.Width && b.Y < ActiveForm.Height && b.X > 0 && b.Y > 0)
+                if (b.X < Width-10 && b.Y < Height-10 && b.X > 10 && b.Y > 10)
                 {
                     if (mapGrid[b.X / 10, b.Y / 10].material != GridItem.Material.Air)
                     {
@@ -620,7 +647,12 @@ namespace Top_down_shooter
                 foreach (GridItem gi in mapGrid)
                 {
                     if (gi.material != GridItem.Material.Air)
-                        graphics.DrawRectangle(new Pen(Brushes.Red), gi.X, gi.Y, 10, 10);
+                    {
+                        if(gi.material == GridItem.Material.Wall)
+                            graphics.DrawRectangle(new Pen(Brushes.Red), gi.X, gi.Y, 10, 10);
+                        if(gi.material == GridItem.Material.Object)
+                            graphics.DrawRectangle(new Pen(Brushes.Green), gi.X, gi.Y, 10, 10);
+                    }
                 }
             }
             // Player rotation
